@@ -43,7 +43,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-servicefile = 'bus_routes_14000.csv'
+bikefile = '201801-1-citibike-tripdata.csv'
 initialStation = None
 recursionLimit = 20000
 
@@ -54,63 +54,32 @@ recursionLimit = 20000
 
 def printMenu():
     print("\n")
-    print("*******************************************")
+    print("-"*75)
     print("Bienvenido")
-    print("1- Inicializar Analizador")
-    print("2- Cargar información de buses de singapur")
-    print("3- Calcular componentes conectados")
-    print("4- Establecer estación base:")
-    print("5- Hay camino entre estacion base y estación: ")
-    print("6- Ruta de costo mínimo desde la estación base y estación: ")
-    print("7- Estación que sirve a mas rutas: ")
+    print("1- Inicializar Analizador y cargar archivos CSV")
+    print("2- Cantidad de Clusters en viajes")
+    print("3- Ruta turística Circular")
+    print("4- Ruta turística de menor tiempo")
+    print("5- Ruta turística por resistencia ")
+    print("6- Ruta más corta entre estaciones ")
+    print("7- Ruta de interés turístico ")
+    print("8- Identificación de estaciones para publcidad")
+    print("9- Identificación de bicis para mantenimiento")
     print("0- Salir")
-    print("*******************************************")
+    print("-"*75)
 
 
 def optionTwo():
-    print("\nCargando información de transporte de singapur ....")
-    controller.loadServices(cont, servicefile)
+    print("\nCargando información de CitiBike ....")
+    controller.loadServices(cont, bikefile)
     numedges = controller.totalConnections(cont)
     numvertex = controller.totalStops(cont)
-    print('Numero de vertices: ' + str(numvertex))
-    print('Numero de arcos: ' + str(numedges))
-    print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
+    print('Número de vertices: ' + str(numvertex))
+    print('Número de arcos: ' + str(numedges))
+    print('El limite de recursión actual: ' + str(sys.getrecursionlimit()))
     sys.setrecursionlimit(recursionLimit)
-    print('El limite de recursion se ajusta a: ' + str(recursionLimit))
+    print('El limite de recursión se ajusta a: ' + str(recursionLimit))
 
-
-def optionThree():
-    print('El número de componentes conectados es: ' +
-          str(controller.connectedComponents(cont)))
-
-
-def optionFour():
-    controller.minimumCostPaths(cont, initialStation)
-
-
-def optionFive():
-    haspath = controller.hasPath(cont, destStation)
-    print('Hay camino entre la estación base : ' +
-          'y la estación: ' + destStation + ': ')
-    print(haspath)
-
-
-def optionSix():
-    path = controller.minimumCostPath(cont, destStation)
-    if path is not None:
-        pathlen = stack.size(path)
-        print('El camino es de longitud: ' + str(pathlen))
-        while (not stack.isEmpty(path)):
-            stop = stack.pop(path)
-            print(stop)
-    else:
-        print('No hay camino')
-
-
-def optionSeven():
-    maxvert, maxdeg = controller.servedRoutes(cont)
-    print('Estación: ' + maxvert + '  Total rutas servidas: '
-          + str(maxdeg))
 
 
 """
@@ -118,42 +87,59 @@ Menu principal
 """
 while True:
     printMenu()
-    inputs = input('Seleccione una opción para continuar\n>')
+    inputs = int(input('Selecciona una opción para continuar\n-->'))
 
-    if int(inputs[0]) == 1:
+    if inputs == 1:
         print("\nInicializando....")
-        # cont es el controlador que se usará de acá en adelante
         cont = controller.init()
+        print("\nCargando información de CitiBike ....")
+        controller.loadServices(cont, bikefile)
+        numedges = controller.totalConnections(cont)
+        numvertex = controller.totalStops(cont)
+        print('Número de vertices: ' + str(numvertex))
+        print('Número de arcos: ' + str(numedges))
+        print('El limite de recursión actual: ' + str(sys.getrecursionlimit()))
+        sys.setrecursionlimit(recursionLimit)
+        print('El limite de recursión se ajusta a: ' + str(recursionLimit))
 
-    elif int(inputs[0]) == 2:
+    elif inputs == 2:
         executiontime = timeit.timeit(optionTwo, number=1)
+        id1=input("Digite la id inicial")
+        id2=input("Digite la id final")
+        x=controller.cantidadDeClusteres(cont,id1,id2)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs[0]) == 3:
+    elif inputs == 3:
         executiontime = timeit.timeit(optionThree, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs[0]) == 4:
+    elif inputs == 4:
         msg = "Estación Base: BusStopCode-ServiceNo (Ej: 75009-10): "
         initialStation = input(msg)
         executiontime = timeit.timeit(optionFour, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs[0]) == 5:
+    elif inputs == 5:
         destStation = input("Estación destino (Ej: 15151-10): ")
         executiontime = timeit.timeit(optionFive, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs[0]) == 6:
+    elif inputs == 6:
         destStation = input("Estación destino (Ej: 15151-10): ")
         executiontime = timeit.timeit(optionSix, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
 
-    elif int(inputs[0]) == 7:
+    elif inputs == 7:
         executiontime = timeit.timeit(optionSeven, number=1)
         print("Tiempo de ejecución: " + str(executiontime))
+    """elif inputs == 8:
 
-    else:
+    elif inputs == 9:
+
+    elif inputs == 0:
         sys.exit(0)
-sys.exit(0)
-
+    
+    else:
+        print("Opción incorrecta .....")
+"""
+main()
