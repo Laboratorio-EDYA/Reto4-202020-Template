@@ -70,8 +70,8 @@ def loadServices(analyzer, servicesfile):
     lastservice = None
     for service in input_file:
         if lastservice is not None:
-            sameservice = lastservice['ServiceNo'] == service['ServiceNo']
-            samedirection = lastservice['Direction'] == service['Direction']
+            sameservice = lastservice['tripduration'] == service['tripduration']
+            samedirection = lastservice['tripduration'] == service['tripduration']
             if sameservice and samedirection:
                 model.addStopConnection(analyzer, lastservice, service)
         lastservice = service
@@ -132,4 +132,10 @@ def servedRoutes(analyzer):
     """
     maxvert, maxdeg = model.servedRoutes(analyzer)
     return maxvert, maxdeg
+
+# ___________________________________________________
+#  Requerimientos
+# ___________________________________________________
+def cantidadDeClusteres(cont,id1,id2):
+    return model.cantidadDeClusteres(cont,id1,id2)
 

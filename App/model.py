@@ -90,7 +90,6 @@ def addStopConnection(analyzer, lastservice, service):
     try:
         origin = formatVertex(lastservice)
         destination = formatVertex(service)
-        cleanServiceDistance(lastservice, service)
         distance = float(service['Distance']) - float(lastservice['Distance'])
         addStop(analyzer, origin)
         addStop(analyzer, destination)
@@ -121,11 +120,11 @@ def addRouteStop(analyzer, service):
     entry = m.get(analyzer['stops'], service['BusStopCode'])
     if entry is None:
         lstroutes = lt.newList(cmpfunction=compareroutes)
-        lt.addLast(lstroutes, service['ServiceNo'])
-        m.put(analyzer['stops'], service['BusStopCode'], lstroutes)
+        lt.addLast(lstroutes, service['tripduration'])
+        m.put(analyzer['stops'], service['end station name'], lstroutes)
     else:
         lstroutes = entry['value']
-        info = service['ServiceNo']
+        info = service['tripduration']
         if not lt.isPresent(lstroutes, info):
             lt.addLast(lstroutes, info)
     return analyzer
@@ -241,15 +240,6 @@ def servedRoutes(analyzer):
 # Funciones Helper
 # ==============================
 
-def cleanServiceDistance(lastservice, service):
-    """
-    En caso de que el archivo tenga un espacio en la
-    distancia, se reemplaza con cero.
-    """
-    if service['Distance'] == '':
-        service['Distance'] = 0
-    if lastservice['Distance'] == '':
-        lastservice['Distance'] = 0
 
 
 def formatVertex(service):
@@ -257,8 +247,7 @@ def formatVertex(service):
     Se formatea el nombrer del vertice con el id de la estación
     seguido de la ruta.
     """
-    name = service['BusStopCode'] + '-'
-    name = name + service['ServiceNo']
+    name = service['tripduration'] + '-'
     return name
 
 
@@ -290,3 +279,46 @@ def compareroutes(route1, route2):
         return 1
     else:
         return -1
+# ==============================
+# Requerimientos
+# ==============================
+
+def cantidadDeClusters(cont,id1,id2):
+    iterator=djk.Dijkstra(cont,id1)
+    minimuncostpath= minimumCostPath(cont,id1)
+    print(minimuncostpath)
+    cont=0
+    while hasPath(iterator,id2):
+        cont+=1
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
