@@ -44,7 +44,6 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-
 tripfile = '201801-3-citibike-tripdata.csv'
 initialStation = None
 recursionLimit = 30000
@@ -58,15 +57,15 @@ def printMenu():
     print("\n")
     print("-"*75)
     print("Bienvenido")
-    print("1- Inicializar Analizador y cargar archivos CSV")
-    print("2- Cantidad de Clusters en viajes")
+    print("1- Inicializar Analizador y cargar aechivo CSV")
+    print("2- Cantidad de Clusters de viajes")
     print("3- Ruta turística Circular")
-    print("4- Ruta turística de menor tiempo")
-    print("5- Ruta turística por resistencia ")
-    print("6- Ruta más corta entre estaciones ")
-    print("7- Ruta de interés turístico ")
-    print("8- Identificación de estaciones para publcidad")
-    print("9- Identificación de bicis para mantenimiento")
+    print("4- Estaciones críticas")
+    print("5- Ruta turística por resistencia")
+    print("6- Recomendador de rutas")
+    print("7- Ruta de interés turístico")
+    print('8- Indentificación de estaciones para publicidad')
+    print('9- Identificacion de bicicletas para mantenimiento')
     print("0- Salir")
     print("-"*75)
 
@@ -84,74 +83,129 @@ def optionTwo():
     controller.cantidadClusters(cont, '','')
 
 
+def optionThree():
+    print('El número de componentes conectados es: ' +
+          str(controller.connectedComponents(cont)))
 
 
-"""
-Menu principal
-"""
-while True:
-    printMenu()
-    inputs = int(input('Selecciona una opción para continuar\n-->'))
+def optionFour():
+    controller.minimumCostPaths(cont, initialStation)
 
-    if inputs == 1:
-        print("\nInicializando....")
 
-        # cont es el controlador que se usará de acá en adelante
-        tamaño = int(input("Digite el tamaño de la tabla de hash: "))
-        carga = float(input("Digita el factor de carga: "))
-        cont = controller.init(tamaño, carga)
+def optionFive():
+    haspath = controller.hasPath(cont, destStation)
+    print('Hay camino entre la estación base : ' +
+          'y la estación: ' + destStation + ': ')
+    print(haspath)
 
-    elif int(inputs[0]) == 2:
-        cont = controller.init()
-        print("\nCargando información de CitiBike ....")
-        controller.loadServices(cont, bikefile)
-        numedges = controller.totalConnections(cont)
-        numvertex = controller.totalStops(cont)
-        print('Número de vertices: ' + str(numvertex))
-        print('Número de arcos: ' + str(numedges))
-        print('El limite de recursión actual: ' + str(sys.getrecursionlimit()))
-        sys.setrecursionlimit(recursionLimit)
-        print('El limite de recursión se ajusta a: ' + str(recursionLimit))
 
-    elif inputs == 2:
-
-        executiontime = timeit.timeit(optionTwo, number=1)
-        id1=input("Digite la id inicial")
-        id2=input("Digite la id final")
-        x=controller.cantidadDeClusteres(cont,id1,id2)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif inputs == 3:
-        executiontime = timeit.timeit(optionThree, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif inputs == 4:
-        msg = "Estación Base: BusStopCode-ServiceNo (Ej: 75009-10): "
-        initialStation = input(msg)
-        executiontime = timeit.timeit(optionFour, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif inputs == 5:
-        destStation = input("Estación destino (Ej: 15151-10): ")
-        executiontime = timeit.timeit(optionFive, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif inputs == 6:
-        destStation = input("Estación destino (Ej: 15151-10): ")
-        executiontime = timeit.timeit(optionSix, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-
-    elif inputs == 7:
-        executiontime = timeit.timeit(optionSeven, number=1)
-        print("Tiempo de ejecución: " + str(executiontime))
-    """elif inputs == 8:
-
-    elif inputs == 9:
-
-    elif inputs == 0:
-        sys.exit(0)
-    
+def optionSix():
+    path = controller.minimumCostPath(cont, destStation)
+    if path is not None:
+        pathlen = stack.size(path)
+        print('El camino es de longitud: ' + str(pathlen))
+        while (not stack.isEmpty(path)):
+            stop = stack.pop(path)
+            print(stop)
     else:
-        print("Opción incorrecta .....")
-"""
+        print('No hay camino')
+
+
+def optionSeven():
+    maxvert, maxdeg = controller.servedRoutes(cont)
+    print('Estación: ' + maxvert + '  Total rutas servidas: '
+          + str(maxdeg))
+
+
+
+def main():
+    while True:
+        printMenu()
+        inputs = input('Seleccione una opción para continuar\n->')
+
+        if inputs == 1:   #Inicio y carga
+            print("\nInicializando....")
+            # cont es el controlador que se usará de acá en adelante
+            tamaño = int(input("Digite el tamaño de la tabla de hash: "))
+            carga = float(input("Digita el factor de carga: "))
+            cont = controller.init(tamaño, carga)
+            executiontime = timeit.timeit(optionTwo, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+
+        elif inputs == 2:   #Req. 1
+            print("\nCantidad de Clusters de viajes")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                print('lol xd')
+
+        elif inputs == 3:   #Req. 2
+            print("\nRuta turística Circular")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                
+                executiontime = timeit.timeit(optionThree, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+
+        elif inputs == 4:   #Req. 3
+            print("\nEstaciones críticas")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                
+                msg = "Estación Base: BusStopCode-ServiceNo (Ej: 75009-10): "
+            initialStation = input(msg)
+            executiontime = timeit.timeit(optionFour, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+
+        elif inputs == 5:   #Req. 4
+            print("\nRuta turística por resistencia")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                
+                destStation = input("Estación destino (Ej: 15151-10): ")
+            executiontime = timeit.timeit(optionFive, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+
+        elif inputs == 6:   #Req. 5
+            print("\nRecomendador de rutas")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                
+                destStation = input("Estación destino (Ej: 15151-10): ")
+            executiontime = timeit.timeit(optionSix, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+
+        elif inputs == 7:   #Req. 6
+            print("\nRuta de interés turístico")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                
+                executiontime = timeit.timeit(optionSeven, number=1)
+            print("Tiempo de ejecución: " + str(executiontime))
+        
+        elif inputs == 8:   #Req. 7*
+            print('\nIndentificación de estaciones para publicidad')
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                print('lolazo xd')
+        
+        elif inputs == 9:   #Req. 8*
+            print('\nIdentificacion de bicicletas para mantenimiento')
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                print('lolalisimo xd')
+        
+        elif inputs == 0:   #Salir
+            print('Cerrando el programa ...')
+            sys.exit(0)
+        
+        else:
+            print('Opción incorrecta .....')
 main()

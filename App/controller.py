@@ -138,4 +138,23 @@ def cantidadClusters(analyzer, id1 , id2):
 def cantidadDeClusteres(cont,id1,id2):
     return model.cantidadDeClusteres(cont,id1,id2)
 
+def rutaTuristicaCircular(cont, time, startStation):   #Req. 2
+    return model.rutaTuristicaCircular(cont, time, startStation)
 
+def estacionesCriticas(cont):   #Req. 3
+    return model.estacionesCriticas(cont)
+
+def rutaTuristicaResistencia(cont, time, idstation):   #Req. 4
+    return model.rutaTuristicaResistencia(cont, time, idstation)
+
+def recomendadorRutas(cont, edades):   #Req. 5
+    return model.recomendadorRutas(cont, edades)
+
+def rutaInteresTuristico(cont, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+    return model.rutaInteresTuristico(cont, latlocal, longlocal, latfinal, longfinal)
+
+def estacionesPublicidad(cont, rango):   #Req. 7*
+    return model.estacionesPublicidad(cont, rango)
+
+def bicicletasMantenimmiento(cont, idbike, fecha):   #Req. 8*
+    return model.bicicletasMantenimmiento(cont, idbike, fecha)
