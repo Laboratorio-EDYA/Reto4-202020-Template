@@ -78,6 +78,7 @@ def newAnalyzer(tamaño, carga):
 # Funciones para agregar informacion al grafo
 
 
+
 def addTrip(analyzer, trip):
     origin = trip['start station id']
     destination = trip['end station id']
@@ -86,6 +87,7 @@ def addTrip(analyzer, trip):
     addStation(analyzer, destination)
     addConnection(analyzer, origin, destination, duration)
     addRouteStation(analyzer, trip)
+
 
 
 def addStation(analyzer, stationid):
@@ -107,6 +109,7 @@ def addRouteStation(analyzer, trip):
     entry = m.get(analyzer['stations'], trip['start station id'])
     if entry is None:
         lstroutes = lt.newList(cmpfunction=compareroutes)
+
         lt.addLast(lstroutes, trip['end station id'])
         m.put(analyzer['stations'], trip['start station id'], lstroutes)
     else:
@@ -223,6 +226,7 @@ def numberStations(analyzer):
 # Funciones Helper
 # ==============================
 
+
 def formatVertex(station):
     """
     Se formatea el nombrer del vertice con el id de la estación
@@ -255,6 +259,7 @@ def compareroutes(route1, route2):
     else:
         return -1
 
+
 def compareConnections(connection1, connection2):
 
     if (connection1 == connection2):
@@ -263,3 +268,18 @@ def compareConnections(connection1, connection2):
         return 1
     else:
         return -1
+=======
+# ==============================
+# Requerimientos
+# ==============================
+
+def cantidadDeClusters(cont,id1,id2):
+    iterator=djk.Dijkstra(cont,id1)
+    minimuncostpath= minimumCostPath(cont,id1)
+    print(minimuncostpath)
+    cont=0
+    while hasPath(iterator,id2):
+        cont+=1
+
+
+

@@ -62,8 +62,20 @@ def loadFile(analyzer, tripfile):
     tripfile = cf.data_dir + tripfile
     input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
                                 delimiter=",")
+
     for trip in input_file:
         model.addTrip(analyzer, trip)
+
+    lastservice = None
+    for service in input_file:
+        if lastservice is not None:
+            sameservice = lastservice['tripduration'] == service['tripduration']
+            samedirection = lastservice['tripduration'] == service['tripduration']
+            if sameservice and samedirection:
+                model.addStopConnection(analyzer, lastservice, service)
+        lastservice = service
+    model.addRouteConnections(analyzer)
+
     return analyzer
 
 
@@ -116,5 +128,14 @@ def minimumCostPath(analyzer, destStation):
 
 
 
+
 def cantidadClusters(analyzer, id1 , id2):
     return model.cantidadClusters(analyzer, id1 , id2)
+
+# ___________________________________________________
+#  Requerimientos
+# ___________________________________________________
+def cantidadDeClusteres(cont,id1,id2):
+    return model.cantidadDeClusteres(cont,id1,id2)
+
+
