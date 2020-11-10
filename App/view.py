@@ -30,6 +30,7 @@ import config
 from App import controller
 from DISClib.ADT import stack
 import timeit
+from DISClib.ADT import map as m
 assert config
 
 """
@@ -43,9 +44,10 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-bikefile = '201801-1-citibike-tripdata.csv'
+
+tripfile = '201801-3-citibike-tripdata.csv'
 initialStation = None
-recursionLimit = 20000
+recursionLimit = 30000
 
 # ___________________________________________________
 #  Menu principal
@@ -71,14 +73,16 @@ def printMenu():
 
 def optionTwo():
     print("\nCargando información de CitiBike ....")
-    controller.loadServices(cont, bikefile)
+    controller.loadFile(cont, tripfile)
     numedges = controller.totalConnections(cont)
-    numvertex = controller.totalStops(cont)
-    print('Número de vertices: ' + str(numvertex))
-    print('Número de arcos: ' + str(numedges))
-    print('El limite de recursión actual: ' + str(sys.getrecursionlimit()))
+    numvertex = controller.totalStation(cont)
+    print('Numero de vertices: ' + str(numvertex))
+    print('Numero de arcos: ' + str(numedges))
+    print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
     sys.setrecursionlimit(recursionLimit)
-    print('El limite de recursión se ajusta a: ' + str(recursionLimit))
+    print('El limite de recursion se ajusta a: ' + str(recursionLimit))
+    controller.cantidadClusters(cont, '','')
+
 
 
 
@@ -91,6 +95,13 @@ while True:
 
     if inputs == 1:
         print("\nInicializando....")
+
+        # cont es el controlador que se usará de acá en adelante
+        tamaño = int(input("Digite el tamaño de la tabla de hash: "))
+        carga = float(input("Digita el factor de carga: "))
+        cont = controller.init(tamaño, carga)
+
+    elif int(inputs[0]) == 2:
         cont = controller.init()
         print("\nCargando información de CitiBike ....")
         controller.loadServices(cont, bikefile)
@@ -103,6 +114,7 @@ while True:
         print('El limite de recursión se ajusta a: ' + str(recursionLimit))
 
     elif inputs == 2:
+
         executiontime = timeit.timeit(optionTwo, number=1)
         id1=input("Digite la id inicial")
         id2=input("Digite la id final")
