@@ -30,6 +30,7 @@ import config
 from App import controller
 from DISClib.ADT import stack
 import timeit
+from DISClib.ADT import map as m
 assert config
 
 """
@@ -43,9 +44,9 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-servicefile = 'bus_routes_14000.csv'
+tripfile = '201801-3-citibike-tripdata.csv'
 initialStation = None
-recursionLimit = 20000
+recursionLimit = 30000
 
 # ___________________________________________________
 #  Menu principal
@@ -69,14 +70,16 @@ def printMenu():
 
 def optionTwo():
     print("\nCargando información de transporte de singapur ....")
-    controller.loadServices(cont, servicefile)
+    controller.loadFile(cont, tripfile)
     numedges = controller.totalConnections(cont)
-    numvertex = controller.totalStops(cont)
+    numvertex = controller.totalStation(cont)
     print('Numero de vertices: ' + str(numvertex))
     print('Numero de arcos: ' + str(numedges))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
     sys.setrecursionlimit(recursionLimit)
     print('El limite de recursion se ajusta a: ' + str(recursionLimit))
+    controller.cantidadClusters(cont, '','')
+
 
 
 def optionThree():
@@ -123,7 +126,9 @@ while True:
     if int(inputs[0]) == 1:
         print("\nInicializando....")
         # cont es el controlador que se usará de acá en adelante
-        cont = controller.init()
+        tamaño = int(input("Digite el tamaño de la tabla de hash: "))
+        carga = float(input("Digita el factor de carga: "))
+        cont = controller.init(tamaño, carga)
 
     elif int(inputs[0]) == 2:
         executiontime = timeit.timeit(optionTwo, number=1)
@@ -156,4 +161,3 @@ while True:
     else:
         sys.exit(0)
 sys.exit(0)
-
