@@ -268,12 +268,12 @@ def compareConnections(connection1, connection2):
         return 1
     else:
         return -1
-=======
+
 # ==============================
 # Requerimientos
 # ==============================
 
-def cantidadDeClusters(cont,id1,id2):
+def cantidadDeClusters(cont,id1,id2):   #Req. 1
     iterator=djk.Dijkstra(cont,id1)
     minimuncostpath= minimumCostPath(cont,id1)
     print(minimuncostpath)
@@ -282,4 +282,16 @@ def cantidadDeClusters(cont,id1,id2):
         cont+=1
 
 
+def rutaTuristicaCircular(analyzer, time, startStation):   #Req. 2
 
+def estacionesCriticas(analyzer):   #Req. 3
+
+def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
+
+def recomendadorRutas(analyzer, edades):   #Req. 5
+
+def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+
+def estacionesPublicidad(analyzer, rango):   #Req. 7*
+
+def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*
