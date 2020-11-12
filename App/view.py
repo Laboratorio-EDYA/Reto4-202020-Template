@@ -32,6 +32,7 @@ from DISClib.ADT import stack
 import timeit
 from DISClib.ADT import map as m
 assert config
+from time import process_time
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -44,7 +45,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-tripfile = '201801-3-citibike-tripdata.csv'
+tripfile = '201801-4-citibike-tripdata.csv'
 initialStation = None
 recursionLimit = 30000
 
@@ -57,7 +58,7 @@ def printMenu():
     print("\n")
     print("-"*75)
     print("Bienvenido")
-    print("1- Inicializar Analizador y cargar aechivo CSV")
+    print("1- Inicializar Analizador y cargar archivo CSV")
     print("2- Cantidad de Clusters de viajes")
     print("3- Ruta turística Circular")
     print("4- Estaciones críticas")
@@ -70,7 +71,7 @@ def printMenu():
     print("-"*75)
 
 
-def optionTwo():
+def optionTwo(cont):
     print("\nCargando información de CitiBike ....")
     controller.loadFile(cont, tripfile)
     numedges = controller.totalConnections(cont)
@@ -79,10 +80,11 @@ def optionTwo():
     print('Numero de arcos: ' + str(numedges))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
     sys.setrecursionlimit(recursionLimit)
+    controller.cantidadClusters(cont, 0,0)
     print('El limite de recursion se ajusta a: ' + str(recursionLimit))
-    controller.cantidadClusters(cont, '','')
+    # controller.cantidadClusters(cont, '','')
 
-
+"""
 def optionThree():
     print('El número de componentes conectados es: ' +
           str(controller.connectedComponents(cont)))
@@ -115,28 +117,29 @@ def optionSeven():
     maxvert, maxdeg = controller.servedRoutes(cont)
     print('Estación: ' + maxvert + '  Total rutas servidas: '
           + str(maxdeg))
-
+"""
 
 
 def main():
     while True:
         printMenu()
-        inputs = input('Seleccione una opción para continuar\n->')
+        inputs = int(input('Seleccione una opción para continuar\n->'))
 
         if inputs == 1:   #Inicio y carga
+            t1_start = process_time() #tiempo inicial
             print("\nInicializando....")
-            # cont es el controlador que se usará de acá en adelante
             tamaño = int(input("Digite el tamaño de la tabla de hash: "))
             carga = float(input("Digita el factor de carga: "))
             cont = controller.init(tamaño, carga)
-            executiontime = timeit.timeit(optionTwo, number=1)
-            print("Tiempo de ejecución: " + str(executiontime))
+            t1_stop = process_time() #tiempo final
+            print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
         elif inputs == 2:   #Req. 1
             print("\nCantidad de Clusters de viajes")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
+                optionTwo(cont)
                 print('lol xd')
 
         elif inputs == 3:   #Req. 2
