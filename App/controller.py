@@ -74,7 +74,7 @@ def loadFile(analyzer, tripfile):
             if sameservice and samedirection:
                 model.addStopConnection(analyzer, lastservice, service)
         lastservice = service
-    model.addRouteConnections(analyzer)
+    model.addRouteStation(analyzer, trip)
 
     return analyzer
 
@@ -127,17 +127,13 @@ def minimumCostPath(analyzer, destStation):
     return model.minimumCostPath(analyzer, destStation)
 
 
-
-
-def cantidadClusters(analyzer, id1 , id2):
-    return model.cantidadClusters(analyzer, id1 , id2)
-
 # ___________________________________________________
 #  Requerimientos
 # ___________________________________________________
-def cantidadDeClusteres(cont,id1,id2):
-    return model.cantidadDeClusteres(cont,id1,id2)
 
+def cantidadClusters(cont,id1,id2):
+    return model.cantidadClusters(cont,id1,id2)
+"""
 def rutaTuristicaCircular(cont, time, startStation):   #Req. 2
     return model.rutaTuristicaCircular(cont, time, startStation)
 
@@ -158,3 +154,4 @@ def estacionesPublicidad(cont, rango):   #Req. 7*
 
 def bicicletasMantenimmiento(cont, idbike, fecha):   #Req. 8*
     return model.bicicletasMantenimmiento(cont, idbike, fecha)
+"""
