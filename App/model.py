@@ -128,24 +128,7 @@ def addConnection(analyzer, origin, destination, duration):
     if edge is None:
         gr.addEdge(analyzer['graph'], origin, destination, duration)
     return analyzer
-
-# ==============================
-# R E Q U E R I M I E N T O S
-# ==============================
-
-def cantidadClusters(analyzer, id1 , id2):
-    var = scc.KosarajuSCC(analyzer['graph'])
-    vertices = gr.vertices(analyzer['graph'])
-    clusters = {'size': 0}
-    iterator = it.newIterator(vertices)
-    while it.hasNext(iterator):
-        current = it.next(iterator)
-        cod = m.get(var['idscc'], current)['value']
-        if cod not in clusters:
-            clusters[cod] = lt.newList()
-            clusters['size'] += 1
-        lt.addLast(clusters[cod],current)
-    print(clusters['size'])
+    
 
 # ==============================
 # Funciones de consulta
@@ -157,7 +140,7 @@ def connectedComponents(analyzer):
     Calcula los componentes conectados del grafo
     Se utiliza el algoritmo de Kosaraju
     """
-    analyzer['stations'] = scc.KosarajuSCC(analyzer['stations'])
+    analyzer['stations'] = scc.KosarajuSCC(analyzer['graph'])
     return scc.connectedComponents(analyzer['stations'])
 
 
@@ -273,13 +256,34 @@ def compareConnections(connection1, connection2):
 # Requerimientos
 # ==============================
 
-def cantidadClusters(cont,id1,id2):   #Req. 1
-    iterator=djk.Dijkstra(cont,id1)
-    minimuncostpath= minimumCostPath(cont,id1)
-    print(minimuncostpath)
-    cont=0
-    #while hasPath(iterator,id2):
-    #    cont+=1
+def cantidadClusters(analyzer, id1 , id2):
+    """
+    ----------REQUERIMIENTO 1------------
+    OUTPUTS:
+        TUPLE: (1,2)
+            1: Número de clústers
+            2: Sí dos nodos están en el mismo clúster
+    """
+    try:
+        var = scc.KosarajuSCC(analyzer['graph'])
+        vertices = gr.vertices(analyzer['graph'])
+        clusters = {'size': 0}
+        iterator = it.newIterator(vertices)
+        #mayor = [0,0]
+        while it.hasNext(iterator):
+            current = it.next(iterator)
+            cod = m.get(var['idscc'], current)['value']
+            if cod not in clusters:
+                clusters[cod] = lt.newList()
+                clusters['size'] += 1
+            lt.addLast(clusters[cod],current)
+            """if lt.size(clusters[cod]) > mayor[1]:
+                mayor[0] = cod
+                mayor[1] = lt.size(clusters[cod])
+        print(str(clusters[mayor[0]]))"""
+        return (clusters['size'],scc.stronglyConnected(var,id1,id2))
+    except:
+        return -1
 
 """
 def rutaTuristicaCircular(analyzer, time, startStation):   #Req. 2
