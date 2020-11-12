@@ -75,7 +75,7 @@ def loadFile(analyzer, tripfile):
                 model.addStopConnection(analyzer, lastservice, service)
         lastservice = service
     model.addRouteStation(analyzer, trip)
-
+    
     return analyzer
 
 
@@ -131,7 +131,7 @@ def minimumCostPath(analyzer, destStation):
 #  Requerimientos
 # ___________________________________________________
 
-def cantidadClusters(cont,id1,id2):
+def cantidadClusters(cont,id1,id2):  #Req. 1
     return model.cantidadClusters(cont,id1,id2)
 """
 def rutaTuristicaCircular(cont, time, startStation):   #Req. 2

@@ -45,7 +45,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-tripfile = '201801-4-citibike-tripdata.csv'
+tripfile = '201801-1-citibike-tripdata.csv'
 initialStation = None
 recursionLimit = 30000
 
@@ -84,12 +84,17 @@ def optionTwo(cont):
     print('El limite de recursion se ajusta a: ' + str(recursionLimit))
     # controller.cantidadClusters(cont, '','')
 
+def optionThree(cont):
+    estacion1= input('Dijite la primera estación: ')
+    estacion2 = input('Dijite la segunda estación: ')
+    data  = controller.cantidadClusters(cont, estacion1, estacion2)
+    print('Hay ',data[0], ' clusters dentro del gráfo')
+    if data[1] == True:
+        print('La estacion ',estacion1, ' y la estacion ',estacion2, ' están en el mismo clúster')
+    else:
+         print('La estacion ',estacion1, ' y la estacion ',estacion2, ' no están en el mismo clúster')
+
 """
-def optionThree():
-    print('El número de componentes conectados es: ' +
-          str(controller.connectedComponents(cont)))
-
-
 def optionFour():
     controller.minimumCostPaths(cont, initialStation)
 
@@ -134,24 +139,24 @@ def main():
             t1_stop = process_time() #tiempo final
             print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-        elif inputs == 2:   #Req. 1
+        elif inputs == 2: 
             print("\nCantidad de Clusters de viajes")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
                 optionTwo(cont)
-                print('lol xd')
 
-        elif inputs == 3:   #Req. 2
+        elif inputs == 3:   #Req. 1
             print("\nRuta turística Circular")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                
-                executiontime = timeit.timeit(optionThree, number=1)
-            print("Tiempo de ejecución: " + str(executiontime))
+                t1_start = process_time() #tiempo inicial
+                optionThree(cont)
+                t1_stop = process_time() #tiempo final
+            print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-        elif inputs == 4:   #Req. 3
+        elif inputs == 4:   #Req. 2
             print("\nEstaciones críticas")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
