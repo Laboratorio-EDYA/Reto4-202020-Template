@@ -261,33 +261,68 @@ def cantidadClusters(analyzer, id1 , id2):
     ----------REQUERIMIENTO 1------------
     OUTPUTS:
         TUPLE: (1,2)
-            1: Número de clústers
+            1: Clusters
             2: Sí dos nodos están en el mismo clúster
     """
-    try:
-        var = scc.KosarajuSCC(analyzer['graph'])
-        vertices = gr.vertices(analyzer['graph'])
-        clusters = {'size': 0}
-        iterator = it.newIterator(vertices)
-        #mayor = [0,0]
-        while it.hasNext(iterator):
-            current = it.next(iterator)
-            cod = m.get(var['idscc'], current)['value']
-            if cod not in clusters:
-                clusters[cod] = lt.newList()
-                clusters['size'] += 1
-            lt.addLast(clusters[cod],current)
-            """if lt.size(clusters[cod]) > mayor[1]:
-                mayor[0] = cod
-                mayor[1] = lt.size(clusters[cod])
-        print(str(clusters[mayor[0]]))"""
-        return (clusters['size'],scc.stronglyConnected(var,id1,id2))
-    except:
-        return -1
+    #try:
+    var = scc.KosarajuSCC(analyzer['graph'])
+    vertices = gr.vertices(analyzer['graph'])
+    clusters = {'size': 0}
+    iterator = it.newIterator(vertices)
+    #mayor = [0,0]
+    while it.hasNext(iterator):
+        current = it.next(iterator)
+        cod = m.get(var['idscc'], current)['value']
+        if cod not in clusters:
+            clusters[cod] = lt.newList(cmpfunction=compareStations)
+            clusters['size'] += 1
+        lt.addLast(clusters[cod],current)
+        """if lt.size(clusters[cod]) > mayor[1]:
+            mayor[0] = cod
+            mayor[1] = lt.size(clusters[cod])
+    print(str(clusters[mayor[0]]))"""
+    conected = False
+    if m.get(var['idscc'],id1) != None and m.get(var['idscc'],id2) != None:
+        conected = scc.stronglyConnected(var,id1,id2)
+    return (clusters,conected,var)
+    """except:
+        return -1"""
 
+def rutaTuristicaCircular(analizador, time, startStation):   #Req. 2
+    analyzer = analizador.copy()
+    clusters = cantidadClusters(analyzer,'1','2')
+    cluster = clusters[0][m.get(clusters[2]['idscc'],startStation)['value']]
+    vecinos = gr.adjacents(analyzer['graph'],startStation)
+    caminos = [0]
+    iterator = it.newIterator(vecinos)
+    while it.hasNext(iterator):
+        current = it.next(iterator)
+        if current != startStation and current in str(cluster):
+            gr.removeVertex(analyzer['graph'],startStation)
+            dijkstra = djk.Dijkstra(analyzer['graph'],current)
+            path = djk.pathTo(dijkstra,startStation)
+            if path != None:
+                trip = djk.distTo(dijkstra,startStation) + 20*(lt.size(path))
+                if trip > int(time[0]) and trip < int(time[1]) and lt.size(path) >= 3:
+                    caminos[0] += 1
+                    caminos.append((path,trip))   
+            analyzer = analizador.copy()
+    return caminos    
+
+"""def caminosx(analyzer,startStation,current,paths,lst):
+    vecinos = gr.adjacents(analyzer['graph'],current)
+    dijkstra = djk.Dijkstra(analyzer['graph'],current)
+    iterator = it.newIterator(vecinos)
+    while it.hasNext(iterator):
+        actual = it.next(iterator)
+        adyacentes = gr.adjacents(analyzer['graph'],actual)
+        if startStation in str(adyacentes):
+            lt.addLast(paths,lst)
+            lst = lt.newList()
+        elif djk.pathTo(dijkstra,startStation) != None:
+            lt.addLast(lst,actual)
+            caminos(analyzer,startStation,actual,paths,lst)"""
 """
-def rutaTuristicaCircular(analyzer, time, startStation):   #Req. 2
-
 def estacionesCriticas(analyzer):   #Req. 3
 
 def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
