@@ -33,6 +33,7 @@ import timeit
 from DISClib.ADT import map as m
 assert config
 from time import process_time
+from DISClib.DataStructures import listiterator as it
 
 """
 La vista se encarga de la interacción con el usuario.
@@ -45,7 +46,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-tripfile = '201801-1-citibike-tripdata.csv'
+tripfile = '201801-3-citibike-tripdata.csv'
 initialStation = None
 recursionLimit = 30000
 
@@ -80,48 +81,48 @@ def optionTwo(cont):
     print('Numero de arcos: ' + str(numedges))
     print('El limite de recursion actual: ' + str(sys.getrecursionlimit()))
     sys.setrecursionlimit(recursionLimit)
-    controller.cantidadClusters(cont, 0,0)
+    controller.cantidadClusters(cont, '0','0')
     print('El limite de recursion se ajusta a: ' + str(recursionLimit))
     # controller.cantidadClusters(cont, '','')
 
-def optionThree(cont):
+def optionThree(cont): #REQ 1
     estacion1= input('Dijite la primera estación: ')
     estacion2 = input('Dijite la segunda estación: ')
     data  = controller.cantidadClusters(cont, estacion1, estacion2)
-    print('Hay ',data[0], ' clusters dentro del gráfo')
+    print('Hay ',data[0]['size'], ' clusters dentro del gráfo')
     if data[1] == True:
         print('La estacion ',estacion1, ' y la estacion ',estacion2, ' están en el mismo clúster')
     else:
          print('La estacion ',estacion1, ' y la estacion ',estacion2, ' no están en el mismo clúster')
 
+def optionFour(cont): #REQ 2
+    inicio = input('Dijite el inicio del rango en minutos: ')
+    final = input('Dijite el final del rango en minutos: ')
+    estacion = input('Digite el identificador de la estación de inicio: ')
+    data = controller.rutaTuristicaCircular(cont, (inicio,final), estacion)
+    if data != -1 and data[0] != 0:
+        print('Se hallaron', data[0]+1,' rutas posibles: ')
+        for i in range(1,len(data)):
+            string = ['vertice ',estacion,' -> ']
+            iterator = it.newIterator(data[i][0])
+            while it.hasNext(iterator):
+                current = it.next(iterator)
+                string.append('vertice '+current['vertexA']+' -> vertice '+current['vertexB'])
+            string = ", ".join(string)
+            print('Ruta número ',i,' de duración', data[i][1],'minutos: ', string)
+    elif data == -1:
+        print('No existe la estación','-'*75)
+    elif data[0] == 0:
+        print('No hay rutas','-'*75)
 """
-def optionFour():
-    controller.minimumCostPaths(cont, initialStation)
-
-
 def optionFive():
-    haspath = controller.hasPath(cont, destStation)
-    print('Hay camino entre la estación base : ' +
-          'y la estación: ' + destStation + ': ')
-    print(haspath)
-
+    
 
 def optionSix():
-    path = controller.minimumCostPath(cont, destStation)
-    if path is not None:
-        pathlen = stack.size(path)
-        print('El camino es de longitud: ' + str(pathlen))
-        while (not stack.isEmpty(path)):
-            stop = stack.pop(path)
-            print(stop)
-    else:
-        print('No hay camino')
-
+    
 
 def optionSeven():
-    maxvert, maxdeg = controller.servedRoutes(cont)
-    print('Estación: ' + maxvert + '  Total rutas servidas: '
-          + str(maxdeg))
+    
 """
 
 
@@ -161,11 +162,10 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                
-                msg = "Estación Base: BusStopCode-ServiceNo (Ej: 75009-10): "
-            initialStation = input(msg)
-            executiontime = timeit.timeit(optionFour, number=1)
-            print("Tiempo de ejecución: " + str(executiontime))
+                t1_start = process_time() #tiempo inicial
+                optionFour(cont)
+                t1_stop = process_time() #tiempo final
+            print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
         elif inputs == 5:   #Req. 4
             print("\nRuta turística por resistencia")

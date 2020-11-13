@@ -133,10 +133,10 @@ def minimumCostPath(analyzer, destStation):
 
 def cantidadClusters(cont,id1,id2):  #Req. 1
     return model.cantidadClusters(cont,id1,id2)
-"""
+
 def rutaTuristicaCircular(cont, time, startStation):   #Req. 2
     return model.rutaTuristicaCircular(cont, time, startStation)
-
+"""
 def estacionesCriticas(cont):   #Req. 3
     return model.estacionesCriticas(cont)
 
