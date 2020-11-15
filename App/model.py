@@ -23,6 +23,7 @@
  * Dario Correal
  *
  """
+import operator
 import config
 from DISClib.ADT.graph import gr
 from DISClib.ADT import map as m
@@ -322,8 +323,53 @@ def rutaTuristicaCircular(analizador, time, startStation):   #Req. 2
             lt.addLast(lst,actual)
             caminos(analyzer,startStation,actual,paths,lst)"""
 """
-def estacionesCriticas(analyzer):   #Req. 3
 
+"""
+def estacionesCriticas(analyzer):   #Req. 3
+    estaciones_de_llegada_pre_R={}
+    estaciones_de_salida_pre_R={}
+    estaciones={}
+    lista=m.keySet(analyzer['stations'])
+    iterator=it.newIterator(lista)
+    while it.hasNext(iterator):
+        actual=it.next(iterator)
+        salida=gr.indegree(analyzer['graph'],actual)
+        estaciones_de_llegada_pre_R[actual]=salida
+        entrada=gr.outdegree(analyzer['graph'],actual)
+        todo=gr.degree(analyzer['graph'],actual)
+        estaciones[actual]=todo
+        estaciones_de_salida_pre_R[actual]=entrada
+    estaciones_de_salida_R=sorted(estaciones_de_salida_pre_R.items(),key=operator.itemgetter(1),reverse=True)
+    estaciones_de_llegada_R=sorted(estaciones_de_llegada_pre_R.items(),key=operator.itemgetter(1),reverse=False)
+    estaciones_R=sorted(estaciones.items(),key=operator.itemgetter(1),reverse=False)
+    """la función sorted devuelve una lista de tuplas donde tupla[0] es la clave y tupla[1] es el valor"""
+    eds={}
+    edl={}
+    em={}
+    cont1=False
+    cont2=False
+    cont3=False
+    
+    while len(edl)<4:
+        if cont1==False:
+            for i in estaciones_de_llegada_R: #Donde i es una tupla de la lista de tuplas
+                edl[i]=i
+                if len(edl)==3:
+                    cont1=True
+    while len(eds)<4:
+        if cont2==False:
+            for i in estaciones_de_salida_R: #Donde i es una tupla de la lista de tuplas
+                eds[i]=i
+                if len(eds)==3:
+                    cont2=True
+    while len(em)<4: 
+        if cont3==False:
+            for i in estaciones_R: #Donde i es una tupla de la lista de tuplas
+                em[i]=i
+                if len(em)==3:
+                    cont3=True
+    return (eds,edl,em) #donde eds es estaciones de salida, edl estaciones de llegada, em estaciones menos usadas
+"""    
 def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
 
 def recomendadorRutas(analyzer, edades):   #Req. 5
