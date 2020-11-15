@@ -46,7 +46,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-tripfile = '201801-3-citibike-tripdata.csv'
+tripfile = '201801-4-citibike-tripdata.csv'
 initialStation = None
 recursionLimit = 30000
 
@@ -59,15 +59,16 @@ def printMenu():
     print("\n")
     print("-"*75)
     print("Bienvenido")
-    print("1- Inicializar Analizador y cargar archivo CSV")
-    print("2- Cantidad de Clusters de viajes")
-    print("3- Ruta turística Circular")
-    print("4- Estaciones críticas")
-    print("5- Ruta turística por resistencia")
-    print("6- Recomendador de rutas")
-    print("7- Ruta de interés turístico")
-    print('8- Indentificación de estaciones para publicidad')
-    print('9- Identificacion de bicicletas para mantenimiento')
+    print("1- Inicializar Analizador")
+    print("2- Cargar archivo CSV")
+    print("3- Cantidad de Clusters de viajes")
+    print("4- Ruta turística Circular")
+    print("5- Estaciones críticas")
+    print("6- Ruta turística por resistencia")
+    print("7- Recomendador de rutas")
+    print("8- Ruta de interés turístico")
+    print('9- Indentificación de estaciones para publicidad')
+    print('10- Identificacion de bicicletas para mantenimiento')
     print("0- Salir")
     print("-"*75)
 
@@ -89,31 +90,38 @@ def optionThree(cont): #REQ 1
     estacion1= input('Dijite la primera estación: ')
     estacion2 = input('Dijite la segunda estación: ')
     data  = controller.cantidadClusters(cont, estacion1, estacion2)
-    print('Hay ',data[0]['size'], ' clusters dentro del gráfo')
-    if data[1] == True:
-        print('La estacion ',estacion1, ' y la estacion ',estacion2, ' están en el mismo clúster')
+    if data == -1:
+        print('No existe alguna de las estaciones','-'*75)
     else:
-         print('La estacion ',estacion1, ' y la estacion ',estacion2, ' no están en el mismo clúster')
+        print('Hay ',data[0]['size'], ' clusters dentro del gráfo')
+        if data[1] == True:
+            print('La estacion ',estacion1, ' y la estacion ',estacion2, ' están en el mismo clúster')
+        else:
+            print('La estacion ',estacion1, ' y la estacion ',estacion2, ' no están en el mismo clúster')
 
 def optionFour(cont): #REQ 2
+    print('Use estos nodos segun el archivo cargado (sugerencia) --> 1: 119,2: 195: ,3: 440,4: 3654')
     inicio = input('Dijite el inicio del rango en minutos: ')
     final = input('Dijite el final del rango en minutos: ')
     estacion = input('Digite el identificador de la estación de inicio: ')
     data = controller.rutaTuristicaCircular(cont, (inicio,final), estacion)
-    if data != -1 and data[0] != 0:
-        print('Se hallaron', data[0]+1,' rutas posibles: ')
-        for i in range(1,len(data)):
-            string = ['vertice ',estacion,' -> ']
-            iterator = it.newIterator(data[i][0])
-            while it.hasNext(iterator):
-                current = it.next(iterator)
-                string.append('vertice '+current['vertexA']+' -> vertice '+current['vertexB'])
-            string = ", ".join(string)
-            print('Ruta número ',i,' de duración', data[i][1],'minutos: ', string)
-    elif data == -1:
-        print('No existe la estación','-'*75)
-    elif data[0] == 0:
-        print('No hay rutas','-'*75)
+    if data == -1:
+        print('No se halló ningun resultado','-'*75)
+    else:
+        if data != -1 and data[0] != 0:
+            print('Se hallaron', data[0],' rutas posibles: ')
+            for i in range(1,len(data)):
+                string = ['vertice ',estacion,' -> ']
+                iterator = it.newIterator(data[i][0])
+                while it.hasNext(iterator):
+                    current = it.next(iterator)
+                    string.append('vertice '+current['vertexA']+' -> vertice '+current['vertexB'])
+                string = ", ".join(string)
+                print('Ruta número ',i,' de duración', data[i][1],'minutos: ', string)
+        elif data == -1:
+            print('No existe la estación','-'*75)
+        elif data[0] == 0:
+            print('No hay rutas','-'*75)
 """
 def optionFive():
     
