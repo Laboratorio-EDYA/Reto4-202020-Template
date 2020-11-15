@@ -114,10 +114,30 @@ def optionFour(cont): #REQ 2
         print('No existe la estación','-'*75)
     elif data[0] == 0:
         print('No hay rutas','-'*75)
-"""
-def optionFive():
-    
 
+def optionFive(cont): #REQ 3
+    data=controller.estacionesCriticas(cont)
+    print('Las salidas mas usadas son:')
+    cnt1=0
+    cnt2=0
+    cnt3=0
+    for i in data[0]:
+        if cnt1 <3:
+            print('Estación:', i[0])
+        cnt1+=1
+    print('Las entradas más usadas son:')
+    for i in data[1]:
+        if cnt2 <3:
+            print('Estación:', i[0])
+        cnt2+=1
+    print('Las estaciones menos usadas son:')
+    for i in data[2]:
+        if cnt3<3:
+            print('Estación:', i[0])
+        cnt3+=1
+        
+
+"""
 def optionSix():
     
 
@@ -166,8 +186,16 @@ def main():
                 optionFour(cont)
                 t1_stop = process_time() #tiempo final
             print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
-
-        elif inputs == 5:   #Req. 4
+        elif inputs == 5:   #Req. 3
+            print("\nEstaciones críticas")
+            if cont == None:
+                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
+            else:
+                t1_start = process_time() #tiempo inicial
+                optionFive(cont)
+                t1_stop = process_time() #tiempo final
+            print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
+        elif inputs == 6:   #Req. 4
             print("\nRuta turística por resistencia")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
@@ -177,7 +205,7 @@ def main():
             executiontime = timeit.timeit(optionFive, number=1)
             print("Tiempo de ejecución: " + str(executiontime))
 
-        elif inputs == 6:   #Req. 5
+        elif inputs == 7:   #Req. 5
             print("\nRecomendador de rutas")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
@@ -187,7 +215,7 @@ def main():
             executiontime = timeit.timeit(optionSix, number=1)
             print("Tiempo de ejecución: " + str(executiontime))
 
-        elif inputs == 7:   #Req. 6
+        elif inputs == 8:   #Req. 6
             print("\nRuta de interés turístico")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
@@ -196,7 +224,7 @@ def main():
                 executiontime = timeit.timeit(optionSeven, number=1)
             print("Tiempo de ejecución: " + str(executiontime))
         
-        elif inputs == 8:   #Req. 7*
+        elif inputs == 9:   #Req. 7*
             print('\nIndentificación de estaciones para publicidad')
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
