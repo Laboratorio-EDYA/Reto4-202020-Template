@@ -46,7 +46,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-tripfile = '201801-3-citibike-tripdata.csv'
+tripfile = '201801-1-citibike-tripdata.csv'
 initialStation = None
 recursionLimit = 30000
 

@@ -341,7 +341,7 @@ def estacionesCriticas(analyzer):   #Req. 3
         estaciones[actual]=todo
         estaciones_de_salida_pre_R[actual]=entrada
     estaciones_de_salida_R=sorted(estaciones_de_salida_pre_R.items(),key=operator.itemgetter(1),reverse=True)
-    estaciones_de_llegada_R=sorted(estaciones_de_llegada_pre_R.items(),key=operator.itemgetter(1),reverse=False)
+    estaciones_de_llegada_R=sorted(estaciones_de_llegada_pre_R.items(),key=operator.itemgetter(1),reverse=True)
     estaciones_R=sorted(estaciones.items(),key=operator.itemgetter(1),reverse=False)
     """la función sorted devuelve una lista de tuplas donde tupla[0] es la clave y tupla[1] es el valor"""
     eds={}
