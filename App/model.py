@@ -33,7 +33,7 @@ from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 assert config
-
+import obspy.geodetics as og
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -264,51 +264,50 @@ def cantidadClusters(analyzer, id1 , id2):
         TUPLE: (1,2)
             1: Clusters
             2: Sí dos nodos están en el mismo clúster
+            3: Variable del algoritmo
     """
-    #try:
-    var = scc.KosarajuSCC(analyzer['graph'])
-    vertices = gr.vertices(analyzer['graph'])
-    clusters = {'size': 0}
-    iterator = it.newIterator(vertices)
-    #mayor = [0,0]
-    while it.hasNext(iterator):
-        current = it.next(iterator)
-        cod = m.get(var['idscc'], current)['value']
-        if cod not in clusters:
-            clusters[cod] = lt.newList(cmpfunction=compareStations)
-            clusters['size'] += 1
-        lt.addLast(clusters[cod],current)
-        """if lt.size(clusters[cod]) > mayor[1]:
-            mayor[0] = cod
-            mayor[1] = lt.size(clusters[cod])
-    print(str(clusters[mayor[0]]))"""
-    conected = False
-    if m.get(var['idscc'],id1) != None and m.get(var['idscc'],id2) != None:
-        conected = scc.stronglyConnected(var,id1,id2)
-    return (clusters,conected,var)
-    """except:
-        return -1"""
+    try:
+        var = scc.KosarajuSCC(analyzer['graph'])
+        vertices = gr.vertices(analyzer['graph'])
+        clusters = {'size': 0}
+        iterator = it.newIterator(vertices)
+        while it.hasNext(iterator):
+            current = it.next(iterator)
+            cod = m.get(var['idscc'], current)['value']
+            if cod not in clusters:
+                clusters[cod] = lt.newList(cmpfunction=compareStations)
+                clusters['size'] += 1
+            lt.addLast(clusters[cod],current)
+        conected = False
+        if m.get(var['idscc'],id1) != None and m.get(var['idscc'],id2) != None:
+            conected = scc.stronglyConnected(var,id1,id2)
+        return (clusters,conected,var)
+    except:
+        return -1
 
 def rutaTuristicaCircular(analizador, time, startStation):   #Req. 2
-    analyzer = analizador.copy()
-    clusters = cantidadClusters(analyzer,'1','2')
-    cluster = clusters[0][m.get(clusters[2]['idscc'],startStation)['value']]
-    vecinos = gr.adjacents(analyzer['graph'],startStation)
-    caminos = [0]
-    iterator = it.newIterator(vecinos)
-    while it.hasNext(iterator):
-        current = it.next(iterator)
-        if current != startStation and current in str(cluster):
-            gr.removeVertex(analyzer['graph'],startStation)
-            dijkstra = djk.Dijkstra(analyzer['graph'],current)
-            path = djk.pathTo(dijkstra,startStation)
-            if path != None:
-                trip = djk.distTo(dijkstra,startStation) + 20*(lt.size(path))
-                if trip > int(time[0]) and trip < int(time[1]) and lt.size(path) >= 3:
-                    caminos[0] += 1
-                    caminos.append((path,trip))   
-            analyzer = analizador.copy()
-    return caminos    
+    try:
+        analyzer = analizador.copy()
+        clusters = cantidadClusters(analyzer,'1','2')
+        cluster = clusters[0][m.get(clusters[2]['idscc'],startStation)['value']]
+        vecinos = gr.adjacents(analyzer['graph'],startStation)
+        caminos = [0]
+        iterator = it.newIterator(vecinos)
+        while it.hasNext(iterator):
+            current = it.next(iterator)
+            if current != startStation and current in str(cluster):
+                gr.removeVertex(analyzer['graph'],startStation)
+                dijkstra = djk.Dijkstra(analyzer['graph'],current)
+                path = djk.pathTo(dijkstra,startStation)
+                if path != None:
+                    trip = djk.distTo(dijkstra,startStation) + 20*(lt.size(path))
+                    if trip > int(time[0]) and trip < int(time[1]) and lt.size(path) >= 3:
+                        caminos[0] += 1
+                        caminos.append((path,trip))   
+                analyzer = analizador.copy()
+        return caminos
+    except:
+        return -1    
 
 """def caminosx(analyzer,startStation,current,paths,lst):
     vecinos = gr.adjacents(analyzer['graph'],current)
@@ -370,6 +369,28 @@ def estacionesCriticas(analyzer):   #Req. 3
                 if len(em)==3:
                     cont3=True
     return (eds,edl,em) #donde eds es estaciones de salida, edl estaciones de llegada, em estaciones menos usadas
+
+
+def gradosAkilometros(data):
+    dato=og.degrees2kilometers(data)
+    return dato
+def distanceBetween(latlocal,latfinal,longlocal,longfinal,longlst,latlst):
+    """
+    Sea longlst y latlst la longitud y la latitud de la lista 
+    """
+def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+    coordtuple=(m.keySet(analyzer['start station latitude']),m.keySet(analyzer['start station longitud']))
+    """
+    sea coortuple como t
+    t[0] son las latitudes iniciales y t[1] son las longitudes iniciales de las estaciones 
+    """
+    iterator1=it.newIterator(coordtuple[0])
+    iterator2=it.newIterator(coordtuple[1])
+    while it.hasNext(iterator1):
+        actual1=it.next(iterator1)
+
+    while it.hasNext(iterator2):    
+        actual2=it.next(iterator2)
 """    
 def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
 
@@ -380,3 +401,16 @@ def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   
 def estacionesPublicidad(analyzer, rango):   #Req. 7*
 
 def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
+
+"""mayor = [0,0,0,0]
+    lt.addLast(clusters[cod],current)
+    if lt.size(clusters[cod]) > mayor[1]:
+        mayor[0] = cod
+        mayor[1] = lt.size(clusters[cod])
+iterator = it.newIterator(clusters[mayor[0]])
+while it.hasNext(iterator):
+    actual = it.next(iterator)
+    if mayor[2] < gr.degree(analyzer['graph'],actual):
+        mayor[2] = gr.degree(analyzer['graph'],actual)
+        mayor[3] = actual
+print(str(mayor[3]))"""
