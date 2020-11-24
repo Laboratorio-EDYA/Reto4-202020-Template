@@ -32,7 +32,11 @@ from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+
 from DISClib.Algorithms import Sorting as s
+
+from DISClib.DataStructures import edge as e
+
 assert config
 import obspy.geodetics as og
 from math import radians, cos, sin, asin, sqrt 
@@ -329,7 +333,7 @@ def cantidadClusters(analyzer, id1 , id2):
             current = it.next(iterator)
             cod = m.get(var['idscc'], current)['value']
             if cod not in clusters:
-                clusters[cod] = lt.newList(cmpfunction=compareStations)
+                clusters[cod] = lt.newList(cmpfunction=compareConnections)
                 clusters['size'] += 1
             lt.addLast(clusters[cod],current)
         conected = False
@@ -349,36 +353,52 @@ def rutaTuristicaCircular(analizador, time, startStation):   #Req. 2
         iterator = it.newIterator(vecinos)
         while it.hasNext(iterator):
             current = it.next(iterator)
-            if current != startStation and current in str(cluster):
-                gr.removeVertex(analyzer['graph'],startStation)
-                dijkstra = djk.Dijkstra(analyzer['graph'],current)
-                path = djk.pathTo(dijkstra,startStation)
-                if path != None:
-                    trip = djk.distTo(dijkstra,startStation) + 20*(lt.size(path))
-                    if trip > int(time[0]) and trip < int(time[1]) and lt.size(path) >= 3:
-                        caminos[0] += 1
-                        caminos.append((path,trip))   
-                analyzer = analizador.copy()
+            gr.removeVertex(analyzer['graph'],startStation)
+            dijkstra = djk.Dijkstra(analyzer['graph'],current)
+            path = djk.pathTo(dijkstra,startStation)
+            if path != None:
+                trip = djk.distTo(dijkstra,startStation) + 20*(lt.size(path))
+                if trip > int(time[0]) and trip < int(time[1]) and lt.size(path) >= 3:
+                    caminos[0] += 1
+                    caminos.append((path,trip))   
+            analyzer = analizador.copy()
         return caminos
     except:
-        return -1    
+        return -1 
 
-"""def caminosx(analyzer,startStation,current,paths,lst):
-    vecinos = gr.adjacents(analyzer['graph'],current)
-    dijkstra = djk.Dijkstra(analyzer['graph'],current)
+"""def rutaTuristicaCircular(analyzer, time, startStation):
+    #try:
+    clusters = cantidadClusters(analyzer,'1','2')
+    cluster = clusters[0][m.get(clusters[2]['idscc'],startStation)['value']]
+    vecinos = gr.adjacents(analyzer['graph'],startStation)
+    rutas = [0]
     iterator = it.newIterator(vecinos)
     while it.hasNext(iterator):
-        actual = it.next(iterator)
-        adyacentes = gr.adjacents(analyzer['graph'],actual)
-        if startStation in str(adyacentes):
-            lt.addLast(paths,lst)
-            lst = lt.newList()
-        elif djk.pathTo(dijkstra,startStation) != None:
-            lt.addLast(lst,actual)
-            caminos(analyzer,startStation,actual,paths,lst)"""
-"""
+        current = it.next(iterator)
+        if current != startStation:
+            trip = {'size': 0}
+            camino = lt.newList(cmpfunction=compareConnections)
+            buscarRuta(analyzer, time, current, startStation, trip, cluster, camino)
+            if lt.size(camino) != 0:
+                rutas.append(camino)
+                rutas[0] += 1
+    return rutas
+    except: 
+        return -1"""
 
-"""
+"""def buscarRuta(analyzer, time, station, anterior, trip, cluster, camino):
+    lt.addLast(camino, station)
+    trip['size'] += e.weight(gr.getEdge(analyzer['graph'],station, anterior))
+    vecinos = gr.adjacents(analyzer['graph'],station)
+    iterator = it.newIterator(vecinos)
+    if it.hasNext(iterator):
+        current = it.next(iterator)
+        if lt.isPresent(cluster, current) and it.hasNext(iterator):   
+            buscarRuta(analyzer, time, current, station, trip, cluster, camino)
+        elif lt.isPresent(cluster, current) and trip/2 > int(time[0]) and trip/2 < int(time[1]):
+            lt.addLast(camino, current)"""
+                
+
 
 def gradosAkilometros(x):
     a=x.split('.')
@@ -438,23 +458,21 @@ def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   
             if STP < minimal1:
                 nameminimal1=coordenate['key']
                 minimal1=STP
-    print(nameminimal)
-    
     duration = float(m.get(analyzer['StationTripTime'],nameminimal)['value']) + float(m.get(analyzer['StationTripTime'],nameminimal1)['value'])
     
     #####
     return (nameminimal, nameminimal1, duration)
 
 """    
-def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
+#def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
 
-def recomendadorRutas(analyzer, edades):   #Req. 5
+#def recomendadorRutas(analyzer, edades):   #Req. 5
 
-def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+#def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
 
-def estacionesPublicidad(analyzer, rango):   #Req. 7*
+#def estacionesPublicidad(analyzer, rango):   #Req. 7*
 
-def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
+#def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
 
 """mayor = [0,0,0,0]
     lt.addLast(clusters[cod],current)
