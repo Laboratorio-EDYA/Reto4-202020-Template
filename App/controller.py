@@ -136,9 +136,12 @@ def cantidadClusters(cont,id1,id2):  #Req. 1
 
 def rutaTuristicaCircular(cont, time, startStation):   #Req. 2
     return model.rutaTuristicaCircular(cont, time, startStation)
-
+ 
 def estacionesCriticas(cont):   #Req. 3
     return model.estacionesCriticas(cont)
+
+def rutaInteresTuristico(cont, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+    return model.rutaInteresTuristico(cont, latlocal, longlocal, latfinal, longfinal)
 """
 def rutaTuristicaResistencia(cont, time, idstation):   #Req. 4
     return model.rutaTuristicaResistencia(cont, time, idstation)
