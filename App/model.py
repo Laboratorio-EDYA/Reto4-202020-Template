@@ -188,11 +188,11 @@ def addConnection(analyzer, origin, destination, duration):
     """
     edge = gr.getEdge(analyzer['graph'], origin, destination)
     if edge is not None:
-        edge['pesos'] += duration
+        edge['pesos'] += (duration / 60)
         edge['size'] += 1
         edge['weight'] = edge['pesos']/edge['size']
     else:
-        gr.addEdge(analyzer['graph'], origin, destination, duration)
+        gr.addEdge(analyzer['graph'], origin, destination, (duration / 60))
 
 # ==============================
 # Funciones de consulta
