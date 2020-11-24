@@ -46,11 +46,10 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-<<<<<<< HEAD
+
 tripfile = '201801-1-citibike-tripdata.csv'
-=======
-tripfile = '201801-4-citibike-tripdata.csv'
->>>>>>> 9038b293a33ad61936f80c628f6249cf1b5ebd8e
+#tripfile = '201801-4-citibike-tripdata.csv'
+
 initialStation = None
 recursionLimit = 30000
 
@@ -130,6 +129,32 @@ def optionFour(cont): #REQ 2
 def optionFive():
     
 
+
+def optionFive(cont): #REQ 3
+    data=controller.estacionesCriticas(cont)
+    print('Las salidas mas usadas son:')
+    cnt1=0
+    cnt2=0
+    cnt3=0
+    for i in data[0]:
+        if cnt1 <3:
+            print('Estación:', i[0])
+        cnt1+=1
+    print('Las entradas más usadas son:')
+    for i in data[1]:
+        if cnt2 <3:
+            print('Estación:', i[0])
+        cnt2+=1
+    print('Las estaciones menos usadas son:')
+    for i in data[2]:
+        if cnt3<3:
+            print('Estación:', i[0])
+        cnt3+=1
+def optionSeven(cont):
+    data=controller.rutaInteresTuristico(cont,"4.076727.216",'-7.198.848.395',"4.076727.216",'-7.198.848.395')        
+    print(data) 
+"""
+
 def optionSix():
     
 
@@ -206,8 +231,8 @@ def main():
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
                 
-                executiontime = timeit.timeit(optionSeven, number=1)
-            print("Tiempo de ejecución: " + str(executiontime))
+                optionSeven(cont)
+            
         
         elif inputs == 8:   #Req. 7*
             print('\nIndentificación de estaciones para publicidad')

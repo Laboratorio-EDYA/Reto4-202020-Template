@@ -32,9 +32,14 @@ from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
+
+from DISClib.Algorithms import Sorting as s
+
 from DISClib.DataStructures import edge as e
+
 assert config
 import obspy.geodetics as og
+from math import radians, cos, sin, asin, sqrt 
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -56,7 +61,9 @@ def newAnalyzer(tamaño, carga):
     try:
         analyzer = {'graph': None,
                     'stations': None,
-                    'paths': None}
+                    'paths': None,
+                    'stationsName':None,
+                    'Latitude&Longitude':None}
                     
         analyzer['graph'] = gr.newGraph(datastructure='ADJ_LIST',
                         directed=True,
@@ -72,6 +79,22 @@ def newAnalyzer(tamaño, carga):
                                      maptype='CHAINING',
                                      loadfactor=carga,
                                      comparefunction=compareroutes)
+        analyzer['stationsName'] = m.newMap(numelements=tamaño,
+                                    maptype='CHAINING',
+                                    loadfactor=carga,
+                                    comparefunction=compareStations)
+        analyzer['Latitude&Longitude'] = m.newMap(numelements=tamaño,
+                                    maptype='CHAINING',
+                                    loadfactor=carga,
+                                    comparefunction=compareStations)
+        analyzer['StationsById'] = m.newMap(numelements=tamaño,
+                                    maptype='CHAINING',
+                                    loadfactor=carga,
+                                    comparefunction=compareStations)
+        analyzer['StationTripTime'] = m.newMap(numelements=tamaño,
+                                    maptype='CHAINING',
+                                    loadfactor=carga,
+                                    comparefunction=compareStations)
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -84,13 +107,25 @@ def newAnalyzer(tamaño, carga):
 def addTrip(analyzer, trip):
     origin = trip['start station id']
     destination = trip['end station id']
+    nameOrigin = trip['start station name']
     duration = int(trip['tripduration'])
+    addCoordenates(analyzer,trip)
+    addStationName(analyzer,trip)
     addStation(analyzer, origin)
     addStation(analyzer, destination)
+    addStationNamebyId(analyzer,trip)
+    addTime(analyzer,trip)
     addConnection(analyzer, origin, destination, duration)
     addRouteStation(analyzer, trip)
 
-
+def addCoordenates(analyzer,trip):
+    latitude=trip['start station latitude']
+    longitude=trip['start station longitude']
+    coordenates=(latitude,longitude)
+    entry=m.get(analyzer['Latitude&Longitude'],coordenates)
+    if entry is None:
+        m.put(analyzer['Latitude&Longitude'],trip['start station name'],coordenates)
+    
 
 def addStation(analyzer, stationid):
     """
@@ -102,7 +137,11 @@ def addStation(analyzer, stationid):
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:addStation')
-
+def addTime(analyzer,trip):
+    entry=m.get(analyzer['StationTripTime'],trip['start station name'])
+    if entry is None:
+        m.put(analyzer['StationTripTime'],trip['start station name'], trip['tripduration'])
+    return analyzer
 
 def addRouteStation(analyzer, trip):
     """
@@ -116,11 +155,29 @@ def addRouteStation(analyzer, trip):
         m.put(analyzer['stations'], trip['start station id'], lstroutes)
     else:
         lstroutes = entry['value']
-        info = trip['end station id']
+        info = trip['start station id']
         if not lt.isPresent(lstroutes, info):
             lt.addLast(lstroutes, info)
     return analyzer
 
+def addStationNamebyId(analyzer,trip):
+    entry=m.get(analyzer['StationsById'],trip['end station name'])
+    if entry is None:
+        m.put(analyzer['StationsById'],trip['end station name'], trip['end station id'])
+    return analyzer
+
+def addStationName(analyzer,trip):
+    entry = m.get(analyzer['stationsName'],trip['start station name'])
+    if entry is None:
+        lstnames = lt.newList(cmpfunction=compareConnections)
+        lt.addLast(lstnames, trip['start station name'])
+        m.put(analyzer['stationsName'],trip['start station id'],lstnames)
+    else:
+        lstnames = entry['value']
+        info = trip['start station id']
+        if not lt.isPresent(lstnames, info):
+            lt.addLast(lstnames,info)
+    return analyzer
 
 def addConnection(analyzer, origin, destination, duration):
     """
@@ -214,7 +271,7 @@ def numberStations(analyzer):
 
 def formatVertex(station):
     """
-    Se formatea el nombrer del vertice con el id de la estación
+    Se formatea el nombre del vertice con el id de la estación
     seguido de la ruta.
     """
     name = station['start station id']
@@ -342,73 +399,70 @@ def rutaTuristicaCircular(analizador, time, startStation):   #Req. 2
             lt.addLast(camino, current)"""
                 
 
-"""
-def estacionesCriticas(analyzer):   #Req. 3
-    estaciones_de_llegada_pre_R={}
-    estaciones_de_salida_pre_R={}
-    estaciones={}
-    lista=m.keySet(analyzer['stations'])
-    iterator=it.newIterator(lista)
-    while it.hasNext(iterator):
-        actual=it.next(iterator)
-        salida=gr.indegree(analyzer['graph'],actual)
-        estaciones_de_llegada_pre_R[actual]=salida
-        entrada=gr.outdegree(analyzer['graph'],actual)
-        todo=gr.degree(analyzer['graph'],actual)
-        estaciones[actual]=todo
-        estaciones_de_salida_pre_R[actual]=entrada
-    estaciones_de_salida_R=sorted(estaciones_de_salida_pre_R.items(),key=operator.itemgetter(1),reverse=True)
-    estaciones_de_llegada_R=sorted(estaciones_de_llegada_pre_R.items(),key=operator.itemgetter(1),reverse=True)
-    estaciones_R=sorted(estaciones.items(),key=operator.itemgetter(1),reverse=False)
-    """"""la función sorted devuelve una lista de tuplas donde tupla[0] es la clave y tupla[1] es el valor"""
-"""eds={}
-    edl={}
-    em={}
-    cont1=False
-    cont2=False
-    cont3=False
-    
-    while len(edl)<4:
-        if cont1==False:
-            for i in estaciones_de_llegada_R: #Donde i es una tupla de la lista de tuplas
-                edl[i]=i
-                if len(edl)==3:
-                    cont1=True
-    while len(eds)<4:
-        if cont2==False:
-            for i in estaciones_de_salida_R: #Donde i es una tupla de la lista de tuplas
-                eds[i]=i
-                if len(eds)==3:
-                    cont2=True
-    while len(em)<4: 
-        if cont3==False:
-            for i in estaciones_R: #Donde i es una tupla de la lista de tuplas
-                em[i]=i
-                if len(em)==3:
-                    cont3=True
-    return (eds,edl,em) #donde eds es estaciones de salida, edl estaciones de llegada, em estaciones menos usadas
+
+def gradosAkilometros(x):
+    a=x.split('.')
+    try:
+        return str(a[0])+'.'+str(a[1])+str(a[2])
+    except:
+        return str(a[0])+'.'+str(a[1])
 
 
-def gradosAkilometros(data):
-    dato=og.degrees2kilometers(data)
-    return dato
-def distanceBetween(latlocal,latfinal,longlocal,longfinal,longlst,latlst):
-    """
-    Sea longlst y latlst la longitud y la latitud de la lista 
-    """
+
+
+def distance(lat1, lat2, lon1, lon2): 
+      
+    # The math module contains a function named 
+    # radians which converts from degrees to radians. 
+    lon1 = radians(float(gradosAkilometros(lon1)))
+    lon2 = radians(float(gradosAkilometros(lon2)))
+    lat1 = radians(float(gradosAkilometros(lat1))) 
+    lat2 = radians(float(gradosAkilometros(lat2)))
+       
+    # Haversine formula  
+    dlon = lon2 - lon1  
+    dlat = lat2 - lat1 
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+  
+    c = 2 * asin(sqrt(a))  
+     
+    # Radius of earth in kilometers. Use 3956 for miles 
+    r = 6371
+       
+    # calculate the result 
+    return(c * r) 
+      
+      
+   
+
 def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
-    coordtuple=(m.keySet(analyzer['start station latitude']),m.keySet(analyzer['start station longitud']))
-    """
-    sea coortuple como t
-    t[0] son las latitudes iniciales y t[1] son las longitudes iniciales de las estaciones 
-    """
-    iterator1=it.newIterator(coordtuple[0])
-    iterator2=it.newIterator(coordtuple[1])
-    while it.hasNext(iterator1):
-        actual1=it.next(iterator1)
+    StationName=m.valueSet(analyzer['stationsName'])
+    iterator=it.newIterator(StationName)
+    minimal=1000000000000
+    nameminimal=''
+    minimal1=1000000000000
+    nameminimal1=''
+    while it.hasNext(iterator):
+        actual=it.next(iterator) #lista
+        iterator2=it.newIterator(actual)
+        while it.hasNext(iterator2):
+            actual2=it.next(iterator2)
+            coordenate=m.get(analyzer['Latitude&Longitude'],actual2) #tupla latitude=(coordenate['value'][0]) y longitude=(coordenate['value'][1])
+            latlst=(coordenate['value'][0])
+            longlst=(coordenate['value'][1])
+            ATS=distance(latlocal,latlst,longlocal,longlst)
+            STP=distance(latlst,latfinal,longlst,longfinal)
+            if ATS < minimal:
+                nameminimal=coordenate['key']
+                minimal=ATS
+            if STP < minimal1:
+                nameminimal1=coordenate['key']
+                minimal1=STP
+    duration = float(m.get(analyzer['StationTripTime'],nameminimal)['value']) + float(m.get(analyzer['StationTripTime'],nameminimal1)['value'])
+    
+    #####
+    return (nameminimal, nameminimal1, duration)
 
-    while it.hasNext(iterator2):    
-        actual2=it.next(iterator2)
 """    
 #def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
 
