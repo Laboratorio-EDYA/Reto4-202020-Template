@@ -46,7 +46,11 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
+<<<<<<< HEAD
+tripfile = '201801-1-citibike-tripdata.csv'
+=======
 tripfile = '201801-4-citibike-tripdata.csv'
+>>>>>>> 9038b293a33ad61936f80c628f6249cf1b5ebd8e
 initialStation = None
 recursionLimit = 30000
 

@@ -34,7 +34,7 @@ from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 from DISClib.DataStructures import edge as e
 assert config
-
+import obspy.geodetics as og
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
 de creacion y consulta sobre las estructuras de datos.
@@ -358,7 +358,7 @@ def estacionesCriticas(analyzer):   #Req. 3
         estaciones[actual]=todo
         estaciones_de_salida_pre_R[actual]=entrada
     estaciones_de_salida_R=sorted(estaciones_de_salida_pre_R.items(),key=operator.itemgetter(1),reverse=True)
-    estaciones_de_llegada_R=sorted(estaciones_de_llegada_pre_R.items(),key=operator.itemgetter(1),reverse=False)
+    estaciones_de_llegada_R=sorted(estaciones_de_llegada_pre_R.items(),key=operator.itemgetter(1),reverse=True)
     estaciones_R=sorted(estaciones.items(),key=operator.itemgetter(1),reverse=False)
     """"""la función sorted devuelve una lista de tuplas donde tupla[0] es la clave y tupla[1] es el valor"""
 """eds={}
@@ -387,6 +387,28 @@ def estacionesCriticas(analyzer):   #Req. 3
                 if len(em)==3:
                     cont3=True
     return (eds,edl,em) #donde eds es estaciones de salida, edl estaciones de llegada, em estaciones menos usadas
+
+
+def gradosAkilometros(data):
+    dato=og.degrees2kilometers(data)
+    return dato
+def distanceBetween(latlocal,latfinal,longlocal,longfinal,longlst,latlst):
+    """
+    Sea longlst y latlst la longitud y la latitud de la lista 
+    """
+def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+    coordtuple=(m.keySet(analyzer['start station latitude']),m.keySet(analyzer['start station longitud']))
+    """
+    sea coortuple como t
+    t[0] son las latitudes iniciales y t[1] son las longitudes iniciales de las estaciones 
+    """
+    iterator1=it.newIterator(coordtuple[0])
+    iterator2=it.newIterator(coordtuple[1])
+    while it.hasNext(iterator1):
+        actual1=it.next(iterator1)
+
+    while it.hasNext(iterator2):    
+        actual2=it.next(iterator2)
 """    
 #def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
 
