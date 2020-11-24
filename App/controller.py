@@ -139,10 +139,10 @@ def rutaTuristicaCircular(cont, time, startStation):   #Req. 2
 
 def estacionesCriticas(cont):   #Req. 3
     return model.estacionesCriticas(cont)
-"""
+
 def rutaTuristicaResistencia(cont, time, idstation):   #Req. 4
     return model.rutaTuristicaResistencia(cont, time, idstation)
-
+"""
 def recomendadorRutas(cont, edades):   #Req. 5
     return model.recomendadorRutas(cont, edades)
 

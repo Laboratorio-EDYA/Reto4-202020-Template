@@ -46,7 +46,7 @@ operación seleccionada.
 #  Variables
 # ___________________________________________________
 
-tripfile = '201801-4-citibike-tripdata.csv'
+tripfile = '201801-1-citibike-tripdata.csv'
 initialStation = None
 recursionLimit = 30000
 
@@ -59,21 +59,20 @@ def printMenu():
     print("\n")
     print("-"*75)
     print("Bienvenido")
-    print("1- Inicializar Analizador")
-    print("2- Cargar archivo CSV")
-    print("3- Cantidad de Clusters de viajes")
-    print("4- Ruta turística Circular")
-    print("5- Estaciones críticas")
-    print("6- Ruta turística por resistencia")
-    print("7- Recomendador de rutas")
-    print("8- Ruta de interés turístico")
-    print('9- Indentificación de estaciones para publicidad')
-    print('10- Identificacion de bicicletas para mantenimiento')
+    print("1- Inicializar analizador y Carga archivo CSV")
+    print("2- Cantidad de Clusters de viajes")
+    print("3- Ruta turística Circular")
+    print("4- Estaciones críticas")
+    print("5- Ruta turística por resistencia")
+    print("6- Recomendador de rutas")
+    print("7- Ruta de interés turístico")
+    print('8- Indentificación de estaciones para publicidad')
+    print('9- Identificacion de bicicletas para mantenimiento')
     print("0- Salir")
     print("-"*75)
 
 
-def optionTwo(cont):
+def cargaDatos(cont):
     print("\nCargando información de CitiBike ....")
     controller.loadFile(cont, tripfile)
     numedges = controller.totalConnections(cont)
@@ -86,7 +85,7 @@ def optionTwo(cont):
     print('El limite de recursion se ajusta a: ' + str(recursionLimit))
     # controller.cantidadClusters(cont, '','')
 
-def optionThree(cont): #REQ 1
+def cantidadClusters(cont): #REQ 1
     estacion1= input('Dijite la primera estación: ')
     estacion2 = input('Dijite la segunda estación: ')
     data  = controller.cantidadClusters(cont, estacion1, estacion2)
@@ -99,7 +98,7 @@ def optionThree(cont): #REQ 1
         else:
             print('La estacion ',estacion1, ' y la estacion ',estacion2, ' no están en el mismo clúster')
 
-def optionFour(cont): #REQ 2
+def rutaTuristicaCircular(cont): #REQ 2
     print('Use estos nodos segun el archivo cargado (sugerencia) --> 1: 119,2: 195: ,3: 440,4: 3654')
     inicio = input('Dijite el inicio del rango en minutos: ')
     final = input('Dijite el final del rango en minutos: ')
@@ -138,8 +137,7 @@ def optionFour(cont): #REQ 2
         elif data[0] == 0:
             print('No hay rutas','-'*75)
     
-
-def optionFive(cont): #REQ 3
+def estacionesCriticas(cont): #REQ 3
     data=controller.estacionesCriticas(cont)
     print('Las salidas mas usadas son:')
     cnt1=0
@@ -160,76 +158,74 @@ def optionFive(cont): #REQ 3
             print('Estación:', i[0])
         cnt3+=1
         
+def rutaTuristicaResistencia(cont):   #REQ. 4
+    time = int(input('Digita el tiempo límite: '))
+    idstation = int(input('Digita la estación de inicio: '))
+    data = controller.rutaTuristicaResistencia(cont, time, idstation)
+    print('En el tiempo limite de ', time, ' se encontraron los siguientes recorridos: ')
+    fin = data.keys()
+    camino = ':'
+    print(str(idstation) + ' --> ' + str(fin) + '   Peso: ' + str(camino))
 
 """
-def optionSix():
-    
-
-def optionSeven():
-    
-"""
+def optionSeven():   #REQ. 5 
+   """ 
 
 
 def main():
     while True:
         printMenu()
-        inputs = int(input('Seleccione una opción para continuar\n->'))
+        inputs = int(input('Seleccione una opción para continuar\n-> '))
 
         if inputs == 1:   #Inicio y carga
             t1_start = process_time() #tiempo inicial
-            print("\nInicializando....")
-            tamaño = int(input("Digite el tamaño de la tabla de hash: "))
+            print("\nInicializando.....")
+            tamaño = int(input("Digita el tamaño de las tablas de hash: "))
             carga = float(input("Digita el factor de carga: "))
             cont = controller.init(tamaño, carga)
+            cargaDatos(cont)
             t1_stop = process_time() #tiempo final
             print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-        elif inputs == 2: 
+        elif inputs == 2:   #Req. 1
             print("\nCantidad de Clusters de viajes")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                optionTwo(cont)
+                t1_start = process_time() #tiempo inicial
+                cantidadClusters(cont)
+                t1_stop = process_time() #tiempo final
+            print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
-        elif inputs == 3:   #Req. 1
+        elif inputs == 3:   #Req. 2
             print("\nRuta turística Circular")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
                 t1_start = process_time() #tiempo inicial
-                optionThree(cont)
+                rutaTuristicaCircular(cont)
                 t1_stop = process_time() #tiempo final
             print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
-
-        elif inputs == 4:   #Req. 2
+        
+        elif inputs == 4:   #Req. 3
             print("\nEstaciones críticas")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
                 t1_start = process_time() #tiempo inicial
-                optionFour(cont)
+                estacionesCriticas(cont)
                 t1_stop = process_time() #tiempo final
             print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
-        elif inputs == 5:   #Req. 3
-            print("\nEstaciones críticas")
-            if cont == None:
-                print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
-            else:
-                t1_start = process_time() #tiempo inicial
-                optionFive(cont)
-                t1_stop = process_time() #tiempo final
-            print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
-        elif inputs == 6:   #Req. 4
+        
+        
+        elif inputs == 5:   #Req. 4
             print("\nRuta turística por resistencia")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                
-                destStation = input("Estación destino (Ej: 15151-10): ")
-            executiontime = timeit.timeit(optionFive, number=1)
-            print("Tiempo de ejecución: " + str(executiontime))
+                rutaTuristicaResistencia(cont)
 
-        elif inputs == 7:   #Req. 5
+        elif inputs == 6:   #Req. 5
             print("\nRecomendador de rutas")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
@@ -239,7 +235,7 @@ def main():
             executiontime = timeit.timeit(optionSix, number=1)
             print("Tiempo de ejecución: " + str(executiontime))
 
-        elif inputs == 8:   #Req. 6
+        elif inputs == 7:   #Req. 6
             print("\nRuta de interés turístico")
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
@@ -248,7 +244,7 @@ def main():
                 executiontime = timeit.timeit(optionSeven, number=1)
             print("Tiempo de ejecución: " + str(executiontime))
         
-        elif inputs == 9:   #Req. 7*
+        elif inputs == 8:   #Req. 7*
             print('\nIndentificación de estaciones para publicidad')
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
