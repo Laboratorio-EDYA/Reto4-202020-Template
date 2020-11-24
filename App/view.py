@@ -113,20 +113,23 @@ def optionFour(cont): #REQ 2
     else:
         if data != -1 and data[0] != 0:
             print('Se hallaron', data[0],' rutas posibles: ')
-            """for i in range(1,len(data)):
-                string = ['vertice ',estacion,' -> ']
+            for i in range(1,len(data)):
+                string = []
+                reves = []
                 iterator = it.newIterator(data[i][0])
                 while it.hasNext(iterator):
                     current = it.next(iterator)
                     string.append('vertice '+current['vertexA']+' -> vertice '+current['vertexB'])
+                    reves.insert(0,'vertice '+current['vertexB']+' -> vertice '+current['vertexA'])
                 string = ", ".join(string)
-                print('Ruta número ',i,' de duración', data[i][1],'minutos: ', string)"""
+                reves = ", ".join(reves)
+                print('Ruta número ',i,' de duración', data[i][1],'minutos: ', string,' -> ', reves)
         elif data == -1:
             print('No existe la estación','-'*75)
         elif data[0] == 0:
             print('No hay rutas','-'*75)
-"""
-def optionFive():
+
+#def optionFive():
     
 
 
@@ -155,10 +158,10 @@ def optionSeven(cont):
     print(data) 
 """
 
-def optionSix():
+#def optionSix():
     
 
-def optionSeven():
+#def optionSeven():
     
 """
 
