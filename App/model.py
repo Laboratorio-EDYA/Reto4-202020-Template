@@ -188,11 +188,11 @@ def addConnection(analyzer, origin, destination, duration):
     """
     edge = gr.getEdge(analyzer['graph'], origin, destination)
     if edge is not None:
-        edge['pesos'] += (duration / 60)
+        edge['pesos'] += round((duration / 60),2)
         edge['size'] += 1
-        edge['weight'] = edge['pesos']/edge['size']
+        edge['weight'] = round((edge['pesos']/edge['size']),2)
     else:
-        gr.addEdge(analyzer['graph'], origin, destination, (duration / 60))
+        gr.addEdge(analyzer['graph'], origin, destination, round((duration / 60),2))
 
 # ==============================
 # Funciones de consulta
@@ -450,7 +450,6 @@ def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
 #def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
 #def estacionesPublicidad(analyzer, rango):   #Req. 7*
 #def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
-=======
 
 # ==============================
 # Funciones Auxiliares
