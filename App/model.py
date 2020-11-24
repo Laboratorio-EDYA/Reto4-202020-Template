@@ -442,6 +442,7 @@ def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   
     
     duration = float(m.get(analyzer['StationTripTime'],nameminimal)['value']) + float(m.get(analyzer['StationTripTime'],nameminimal1)['value'])
     
+    #####
     return (nameminimal, nameminimal1, duration)
 
 """    
