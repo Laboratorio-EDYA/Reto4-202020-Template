@@ -136,7 +136,7 @@ def cantidadClusters(cont,id1,id2):  #Req. 1
 
 def rutaTuristicaCircular(cont, time, startStation):   #Req. 2
     return model.rutaTuristicaCircular(cont, time, startStation)
-
+ 
 def estacionesCriticas(cont):   #Req. 3
     return model.estacionesCriticas(cont)
 
