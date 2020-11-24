@@ -30,6 +30,7 @@ from DISClib.ADT import map as m
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
 from DISClib.Algorithms.Graphs import scc
+from DISClib.Algorithms.Graphs import dfs
 from DISClib.Algorithms.Graphs import dijsktra as djk
 from DISClib.Utils import error as error
 
@@ -38,7 +39,7 @@ from DISClib.Algorithms import Sorting as s
 from DISClib.DataStructures import edge as e
 
 assert config
-import obspy.geodetics as og
+#import obspy.geodetics as og
 from math import radians, cos, sin, asin, sqrt 
 """
 En este archivo definimos los TADs que vamos a usar y las operaciones
@@ -95,6 +96,10 @@ def newAnalyzer(tamaño, carga):
                                     maptype='CHAINING',
                                     loadfactor=carga,
                                     comparefunction=compareStations)
+        analyzer['Top'] = m.newMap(numelements=tamaño,
+                                    maptype='CHAINING',
+                                    loadfactor=carga,
+                                    comparefunction=compareStations)
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -107,7 +112,6 @@ def newAnalyzer(tamaño, carga):
 def addTrip(analyzer, trip):
     origin = trip['start station id']
     destination = trip['end station id']
-    nameOrigin = trip['start station name']
     duration = int(trip['tripduration'])
     addCoordenates(analyzer,trip)
     addStationName(analyzer,trip)
@@ -126,7 +130,6 @@ def addCoordenates(analyzer,trip):
     if entry is None:
         m.put(analyzer['Latitude&Longitude'],trip['start station name'],coordenates)
     
-
 def addStation(analyzer, stationid):
     """
     Adiciona una estación como un vertice del grafo
@@ -137,6 +140,7 @@ def addStation(analyzer, stationid):
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:addStation')
+
 def addTime(analyzer,trip):
     entry=m.get(analyzer['StationTripTime'],trip['start station name'])
     if entry is None:
@@ -184,15 +188,16 @@ def addConnection(analyzer, origin, destination, duration):
     Adiciona un arco entre dos estaciones
     """
     edge = gr.getEdge(analyzer['graph'], origin, destination)
-    if edge is None:
+    if edge is not None:
+        edge['pesos'] += duration
+        edge['size'] += 1
+        edge['weight'] = edge['pesos']/edge['size']
+    else:
         gr.addEdge(analyzer['graph'], origin, destination, duration)
-    return analyzer
-    
 
 # ==============================
 # Funciones de consulta
 # ==============================
-
 
 def connectedComponents(analyzer):
     """
@@ -202,7 +207,6 @@ def connectedComponents(analyzer):
     analyzer['stations'] = scc.KosarajuSCC(analyzer['graph'])
     return scc.connectedComponents(analyzer['stations'])
 
-
 def minimumCostPaths(analyzer, initialStation):
     """
     Calcula los caminos de costo mínimo desde la estacion initialStation
@@ -211,14 +215,12 @@ def minimumCostPaths(analyzer, initialStation):
     analyzer['paths'] = djk.Dijkstra(analyzer['graph'], initialStation)
     return analyzer
 
-
 def hasPath(analyzer, destStation):
     """
     Indica si existe un camino desde la estacion inicial a la estación destino
     Se debe ejecutar primero la funcion minimumCostPaths
     """
     return djk.hasPathTo(analyzer['paths'], destStation)
-
 
 def minimumCostPath(analyzer, destStation):
     """
@@ -229,20 +231,17 @@ def minimumCostPath(analyzer, destStation):
     path = djk.pathTo(analyzer['paths'], destStation)
     return path
 
-
 def totalStation(analyzer):
     """
     Retorna el total de estaciones (vertices) del grafo
     """
     return gr.numVertices(analyzer['graph'])
 
-
 def totalConnections(analyzer):
     """
     Retorna el total arcos del grafo
     """
     return gr.numEdges(analyzer['graph'])
-
 
 def numberStations(analyzer):
     """
@@ -263,11 +262,9 @@ def numberStations(analyzer):
             maxdeg = degree
     return maxvert, maxdeg
 
-
-# ==============================
+# =============================
 # Funciones Helper
 # ==============================
-
 
 def formatVertex(station):
     """
@@ -277,11 +274,9 @@ def formatVertex(station):
     name = station['start station id']
     return name
 
-
 # ==============================
 # Funciones de Comparacion
 # ==============================
-
 
 def compareStations(station, keyvaluestation):
     stationcode = keyvaluestation['key']
@@ -292,7 +287,6 @@ def compareStations(station, keyvaluestation):
     else:
         return -1
 
-
 def compareroutes(route1, route2):
     if (route1 == route2):
         return 0
@@ -300,7 +294,6 @@ def compareroutes(route1, route2):
         return 1
     else:
         return -1
-
 
 def compareConnections(connection1, connection2):
 
@@ -315,7 +308,7 @@ def compareConnections(connection1, connection2):
 # Requerimientos
 # ==============================
 
-def cantidadClusters(analyzer, id1 , id2):
+def cantidadClusters(analyzer, id1 , id2): #Req. 1
     """
     ----------REQUERIMIENTO 1------------
     OUTPUTS:
@@ -348,92 +341,37 @@ def rutaTuristicaCircular(analizador, time, startStation):   #Req. 2
         analyzer = analizador.copy()
         clusters = cantidadClusters(analyzer,'1','2')
         cluster = clusters[0][m.get(clusters[2]['idscc'],startStation)['value']]
-        vecinos = gr.adjacents(analyzer['graph'],startStation)
         caminos = [0]
-        iterator = it.newIterator(vecinos)
+        iterator = it.newIterator(cluster)
+        search = djk.Dijkstra(analyzer['graph'],startStation)
         while it.hasNext(iterator):
             current = it.next(iterator)
-            gr.removeVertex(analyzer['graph'],startStation)
-            dijkstra = djk.Dijkstra(analyzer['graph'],current)
-            path = djk.pathTo(dijkstra,startStation)
-            if path != None:
-                trip = djk.distTo(dijkstra,startStation) + 20*(lt.size(path))
-                if trip > int(time[0]) and trip < int(time[1]) and lt.size(path) >= 3:
-                    caminos[0] += 1
-                    caminos.append((path,trip))   
-            analyzer = analizador.copy()
+            camino = djk.pathTo(search, current)
+            trip = djk.distTo(search, current)
+            if trip*2 > int(time[0]) and trip*2 < int(time[1]):
+                caminos[0] += 1
+                caminos.append((camino,trip*2))   
         return caminos
     except:
-        return -1 
+        return -1
 
-"""def rutaTuristicaCircular(analyzer, time, startStation):
-    #try:
-    clusters = cantidadClusters(analyzer,'1','2')
-    cluster = clusters[0][m.get(clusters[2]['idscc'],startStation)['value']]
-    vecinos = gr.adjacents(analyzer['graph'],startStation)
-    rutas = [0]
-    iterator = it.newIterator(vecinos)
+def estacionesCriticas(analyzer):   #Req. 3
+    vertices = gr.vertices(analyzer['graph'])
+    values = {}
+    iterator = it.newIterator(vertices)
     while it.hasNext(iterator):
         current = it.next(iterator)
-        if current != startStation:
-            trip = {'size': 0}
-            camino = lt.newList(cmpfunction=compareConnections)
-            buscarRuta(analyzer, time, current, startStation, trip, cluster, camino)
-            if lt.size(camino) != 0:
-                rutas.append(camino)
-                rutas[0] += 1
-    return rutas
-    except: 
-        return -1"""
-
-"""def buscarRuta(analyzer, time, station, anterior, trip, cluster, camino):
-    lt.addLast(camino, station)
-    trip['size'] += e.weight(gr.getEdge(analyzer['graph'],station, anterior))
-    vecinos = gr.adjacents(analyzer['graph'],station)
-    iterator = it.newIterator(vecinos)
-    if it.hasNext(iterator):
-        current = it.next(iterator)
-        if lt.isPresent(cluster, current) and it.hasNext(iterator):   
-            buscarRuta(analyzer, time, current, station, trip, cluster, camino)
-        elif lt.isPresent(cluster, current) and trip/2 > int(time[0]) and trip/2 < int(time[1]):
-            lt.addLast(camino, current)"""
-                
-
-
-def gradosAkilometros(x):
-    a=x.split('.')
-    try:
-        return str(a[0])+'.'+str(a[1])+str(a[2])
-    except:
-        return str(a[0])+'.'+str(a[1])
-
-
-
-
-def distance(lat1, lat2, lon1, lon2): 
-      
-    # The math module contains a function named 
-    # radians which converts from degrees to radians. 
-    lon1 = radians(float(gradosAkilometros(lon1)))
-    lon2 = radians(float(gradosAkilometros(lon2)))
-    lat1 = radians(float(gradosAkilometros(lat1))) 
-    lat2 = radians(float(gradosAkilometros(lat2)))
-       
-    # Haversine formula  
-    dlon = lon2 - lon1  
-    dlat = lat2 - lat1 
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-  
-    c = 2 * asin(sqrt(a))  
-     
-    # Radius of earth in kilometers. Use 3956 for miles 
-    r = 6371
-       
-    # calculate the result 
-    return(c * r) 
-      
-      
-   
+        edges = gr.adjacentEdges(current)
+        iterator2 = it.newIterator(edges)
+        while it.hasNext(iterator2):
+            current2 = it.newIterator(iterator2)
+            if current not in values:
+                values[current] = current2['size']
+            else:
+                values[current] += current2['size']
+    #return hallarTop(values)
+    
+        
 
 def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
     StationName=m.valueSet(analyzer['stationsName'])
@@ -463,6 +401,40 @@ def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   
     #####
     return (nameminimal, nameminimal1, duration)
 
+# ==============================
+# Funciones Auxiliares
+# ==============================
+
+def gradosAkilometros(x):
+    a=x.split('.')
+    try:
+        return str(a[0])+'.'+str(a[1])+str(a[2])
+    except:
+        return str(a[0])+'.'+str(a[1])
+
+def distance(lat1, lat2, lon1, lon2): 
+      
+    # The math module contains a function named 
+    # radians which converts from degrees to radians. 
+    lon1 = radians(float(gradosAkilometros(lon1)))
+    lon2 = radians(float(gradosAkilometros(lon2)))
+    lat1 = radians(float(gradosAkilometros(lat1))) 
+    lat2 = radians(float(gradosAkilometros(lat2)))
+       
+    # Haversine formula  
+    dlon = lon2 - lon1  
+    dlat = lat2 - lat1 
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+  
+    c = 2 * asin(sqrt(a))  
+     
+    # Radius of earth in kilometers. Use 3956 for miles 
+    r = 6371
+       
+    # calculate the result 
+    return(c * r) 
+
+
 """    
 #def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
 
@@ -473,16 +445,3 @@ def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   
 #def estacionesPublicidad(analyzer, rango):   #Req. 7*
 
 #def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
-
-"""mayor = [0,0,0,0]
-    lt.addLast(clusters[cod],current)
-    if lt.size(clusters[cod]) > mayor[1]:
-        mayor[0] = cod
-        mayor[1] = lt.size(clusters[cod])
-iterator = it.newIterator(clusters[mayor[0]])
-while it.hasNext(iterator):
-    actual = it.next(iterator)
-    if mayor[2] < gr.degree(analyzer['graph'],actual):
-        mayor[2] = gr.degree(analyzer['graph'],actual)
-        mayor[3] = actual
-print(str(mayor[3]))"""
