@@ -63,6 +63,31 @@ def Dijkstra(graph, source):
     except Exception as exp:
         error.reraise(exp, 'dks:dijkstra')
 
+def Dijkstra_copy(graph, source1, source2):
+    """
+    Implementa el algoritmo de Dijkstra
+    Args:
+        graph: El grafo de busqueda
+        source1: El vertice de inicio
+        source2: El vertice de fin
+    Returns:
+        Un nuevo grafo vacío
+    Raises:
+        Exception
+    """
+    try:
+        search = initSearch(graph, source)
+        while not iminpq.isEmpty(search['iminpq']):
+            v = iminpq.delMin(search['iminpq'])
+            edges = g.adjacentEdges(graph, v)
+            if edges is not None:
+                edgesiter = it.newIterator(edges)
+                while (it.hasNext(edgesiter)):
+                    edge = it.next(edgesiter)
+                    relax(search, edge)
+        return search
+    except Exception as exp:
+        error.reraise(exp, 'dks:dijkstra')
 
 def relax(search, edge):
     """

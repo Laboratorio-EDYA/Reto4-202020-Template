@@ -56,8 +56,6 @@ def init(tamaño, carga):
 
 
 def loadFile(analyzer, tripfile):
-    """
-    """
     print('Cargando archivo: ' + tripfile)
     tripfile = cf.data_dir + tripfile
     input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
@@ -65,6 +63,7 @@ def loadFile(analyzer, tripfile):
 
     for trip in input_file:
         model.addTrip(analyzer, trip)
+        # model.addAge(analyzer, trip)
 
     lastservice = None
     for service in input_file:
@@ -142,10 +141,10 @@ def estacionesCriticas(cont):   #Req. 3
 
 def rutaTuristicaResistencia(cont, time, idstation):   #Req. 4
     return model.rutaTuristicaResistencia(cont, time, idstation)
-"""
+
 def recomendadorRutas(cont, edades):   #Req. 5
     return model.recomendadorRutas(cont, edades)
-
+"""
 def rutaInteresTuristico(cont, latlocal, longlocal, latfinal, longfinal):   #Req. 6
     return model.rutaInteresTuristico(cont, latlocal, longlocal, latfinal, longfinal)
 
