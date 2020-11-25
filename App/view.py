@@ -48,8 +48,8 @@ operación seleccionada.
 
 
 
+#tripfile = '201801-1-citibike-tripdata.csv'
 tripfile = '201801-1-citibike-tripdata.csv'
-#tripfile = '201801-4-citibike-tripdata.csv'
 
 initialStation = None
 recursionLimit = 30000
@@ -162,7 +162,7 @@ def rutaTuristicaResistencia(cont):   #REQ. 4
     for each_trip in data:
         fin = each_trip
         peso = data[each_trip]
-        print(str(idstation) + ' ---> ' + str(fin) + ' ....... Peso: ' , peso)
+        print(str(idstation) + ' ---> ' + str(fin) + ' _______ Tiempo: ' , peso , 'minutos')
 """
 def optionSeven():   #REQ. 5 
    """ 
@@ -239,7 +239,7 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                controller.recomendadorRutas(cont, 40)
+                controller.recomendadorRutas(cont, 79)
 
         elif inputs == 7:   #Req. 6
             print("\nRuta de interés turístico")
