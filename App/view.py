@@ -155,14 +155,14 @@ def optionFive(cont): #REQ 3
 
         
 def rutaTuristicaResistencia(cont):   #REQ. 4
-    time = int(input('Digita el tiempo límite: '))
+    time = int(input('Digita el tiempo límite (minutos): '))
     idstation = int(input('Digita la estación de inicio: '))
     data = controller.rutaTuristicaResistencia(cont, time, idstation)
-    print('En el tiempo limite de ', time, ' se encontraron los siguientes recorridos: ')
-    fin = data.keys()
-    camino = ':'
-    print(str(idstation) + ' --> ' + str(fin) + '   Peso: ' + str(camino))
-
+    print('En el tiempo limite de ', time, ' minutos, se encontraron los siguientes recorridos: ')
+    for each_trip in data:
+        fin = each_trip
+        peso = data[each_trip]
+        print(str(idstation) + ' ---> ' + str(fin) + ' ....... Peso: ' , peso)
 """
 def optionSeven():   #REQ. 5 
    """ 
@@ -239,10 +239,7 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                
-                destStation = input("Estación destino (Ej: 15151-10): ")
-            executiontime = timeit.timeit(optionSix, number=1)
-            print("Tiempo de ejecución: " + str(executiontime))
+                controller.recomendadorRutas(cont, 40)
 
         elif inputs == 7:   #Req. 6
             print("\nRuta de interés turístico")

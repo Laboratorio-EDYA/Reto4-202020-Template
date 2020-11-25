@@ -63,7 +63,8 @@ def newAnalyzer(tamaño, carga):
                     'stations': None,
                     'paths': None,
                     'stationsName':None,
-                    'Latitude&Longitude':None}
+                    'Latitude&Longitude':None,
+                    'Age': None}
                     
         analyzer['graph'] = gr.newGraph(datastructure='ADJ_LIST',
                         directed=True,
@@ -99,6 +100,10 @@ def newAnalyzer(tamaño, carga):
                                     maptype='CHAINING',
                                     loadfactor=carga,
                                     comparefunction=compareStations)
+        analyzer['Age'] = m.newMap(numelements=tamaño,
+                                    maptype='PROBING',
+                                    loadfactor=carga,
+                                    comparefunction=compareStations)
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -112,6 +117,7 @@ def addTrip(analyzer, trip):
     origin = trip['start station id']
     destination = trip['end station id']
     duration = int(trip['tripduration'])
+    age = int(trip['birth year'])
     addCoordenates(analyzer,trip)
     addStationName(analyzer,trip)
     addStation(analyzer, origin)
@@ -119,6 +125,7 @@ def addTrip(analyzer, trip):
     addStationNamebyId(analyzer,trip)
     addTime(analyzer,trip)
     addConnection(analyzer, origin, destination, duration)
+    # addAge(analyzer, origin, destination, age)
     addRouteStation(analyzer, trip)
 
 def addCoordenates(analyzer,trip):
@@ -193,6 +200,15 @@ def addConnection(analyzer, origin, destination, duration):
         edge['weight'] = round((edge['pesos']/edge['size']),2)
     else:
         gr.addEdge(analyzer['graph'], origin, destination, round((duration / 60),2))
+    
+"""def addAge(analyzer, origin, destination, age):
+    entry = m.get(analyzer['Age'],trip['birth year'])
+    estaciones = (origin , destination)
+    if entry is None:
+        m.put(analyzer['Age'],trip['birth year'], estaciones)
+
+    return analyzer"""
+
 
 # ==============================
 # Funciones de consulta
@@ -370,7 +386,28 @@ def estacionesCriticas(analyzer):   #Req. 3
                 values[current] += current2['size']
     #return hallarTop(values)
     
-        
+    
+def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
+    vertices = {}
+    res = gr.adjacentEdges(analyzer['graph'], str(idstation)) #res = lista
+    iterator = it.newIterator(res)
+    while it.hasNext(iterator):
+        current = it.next(iterator)
+        if current['weight'] < time:
+            vertices[current['vertexB']] = current['weight']
+    return vertices
+
+
+def recomendadorRutas(analyzer,edad):   #Req. 5
+    funcion_hash = hash_function(edad)
+    dic_estaciones_inicio = estacionesinicio(analyzer)
+    dic_estaciones_final = estacionesfin(analyzer)
+    max_inicio = maximoinicio(dic_estaciones_inicio)
+    max_final = maximofinal(dic_estaciones_final)
+    estacion_inicio = max_inicio[str(funcion_hash)]
+    estacion_final = max_final[str(funcion_hash)]
+    recorrido = []
+    print(estacion_inicio, estacion_final)
 
 def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
     StationName=m.valueSet(analyzer['stationsName'])
@@ -434,65 +471,61 @@ def distance(lat1, lat2, lon1, lon2):
     return(c * r) 
 
 
-def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
-    vertices = {}
-    res = gr.adjacentEdges(analyzer['graph'], '144') #res = lista
-    iterator = it.newIterator(res)
-    while it.hasNext(iterator):
-        current = it.next(iterator)
-        if current['weight'] < time:
-            vertices[current['vertexB']] = {}
-            vertices[current['vertexB']]['weight'] = current['weight']
-    return vertices
+def hash_function(age):
+    id_hash = age // 10 - (1 if age % 10 == 0 else 0)
+    return id_hash if id_hash < 6 else 6
+
+def estacionesinicio(analyzer):
+    data = analyzer['Age']
+    print(analyzer['Age'])
+    edades_inicio = {'0': {}, '1': {}, '2': {}, '3': {}, '4': {}, '5': {}, '6': {}}
+    for each_person in data:
+        print(each_person)
+        age = 2020 - int(each_person['birth year'])
+        id_hash = hash_function(age)
+        if str(each_person['start station id']) in edades_inicio[str(id_hash)]:
+            edades_inicio[str(id_hash)][str(each_person['start station id'])] += 1
+        else:
+            edades_inicio[str(id_hash)][str(each_person['start_station'])] = 1
+    return edades_inicio
+
+def estacionesfin(analyzer):
+    data = analyzer['Age']
+    edades_fin = {'0': {}, '1': {}, '2': {}, '3': {}, '4': {}, '5': {}, '6': {}}
+    for each_person in data:
+        age = 2020 - int(each_person['birth year'])
+        id_hash = hash_function(age)
+        if str(each_person['end station id']) in edades_fin[str(id_hash)]:
+            edades_fin[str(id_hash)][str(each_person['end_station'])] += 1
+        else:
+            edades_fin[str(id_hash)][str(each_person['end_station'])] = 1
+    return edades_fin
+
+def maximoinicio(edades_inicio):
+    ganador_inicio = {'0': -1, '1': -1, '2': -1, '3': -1, '4': -1, '5': -1, '6': -1}
+    for key, age_group in edades_inicio.items():
+        max_ = 0
+        start_id = -1
+        for station, value in age_group.items():
+            if value > max_:
+                max_ = value
+                start_id = station
+                ganador_inicio[str(key)] = int(start_id)
+    return ganador_inicio
+
+def maximofinal(edades_fin):
+    ganador_final = {'0': -1, '1': -1, '2': -1, '3': -1, '4': -1, '5': -1, '6': -1}
+    for key, age_group in edades_fin.items():
+        max_ = 0
+        end_id = -1
+        for station, value in age_group.items():
+            if value > max_:
+                max_ = value
+                end_id = station
+                ganador_final[str(key)] = int(end_id)
+    return ganador_final
 
 
-"""#def recomendadorRutas(analyzer, edades):   #Req. 5
-#def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+"""#def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
 #def estacionesPublicidad(analyzer, rango):   #Req. 7*
 #def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
-
-# ==============================
-# Funciones Auxiliares
-# ==============================
-
-def gradosAkilometros(x):
-    a=x.split('.')
-    try:
-        return str(a[0])+'.'+str(a[1])+str(a[2])
-    except:
-        return str(a[0])+'.'+str(a[1])
-
-def distance(lat1, lat2, lon1, lon2): 
-      
-    # The math module contains a function named 
-    # radians which converts from degrees to radians. 
-    lon1 = radians(float(gradosAkilometros(lon1)))
-    lon2 = radians(float(gradosAkilometros(lon2)))
-    lat1 = radians(float(gradosAkilometros(lat1))) 
-    lat2 = radians(float(gradosAkilometros(lat2)))
-       
-    # Haversine formula  
-    dlon = lon2 - lon1  
-    dlat = lat2 - lat1 
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-  
-    c = 2 * asin(sqrt(a))  
-     
-    # Radius of earth in kilometers. Use 3956 for miles 
-    r = 6371
-       
-    # calculate the result 
-    return(c * r) 
-
-
-"""    
-#def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
-
-#def recomendadorRutas(analyzer, edades):   #Req. 5
-
-#def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
-
-#def estacionesPublicidad(analyzer, rango):   #Req. 7*
-
-#def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
-
