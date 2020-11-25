@@ -100,10 +100,7 @@ def newAnalyzer(tamaño, carga):
                                     maptype='CHAINING',
                                     loadfactor=carga,
                                     comparefunction=compareStations)
-        analyzer['Age'] = m.newMap(numelements=tamaño,
-                                    maptype='PROBING',
-                                    loadfactor=carga,
-                                    comparefunction=compareStations)
+        analyzer['Age'] = []
         return analyzer
     except Exception as exp:
         error.reraise(exp, 'model:newAnalyzer')
@@ -116,17 +113,17 @@ def newAnalyzer(tamaño, carga):
 def addTrip(analyzer, trip):
     origin = trip['start station id']
     destination = trip['end station id']
-    duration = int(trip['tripduration'])
-    age = int(trip['birth year'])
-    addCoordenates(analyzer,trip)
-    addStationName(analyzer,trip)
-    addStation(analyzer, origin)
-    addStation(analyzer, destination)
-    addStationNamebyId(analyzer,trip)
-    addTime(analyzer,trip)
-    addConnection(analyzer, origin, destination, duration)
-    # addAge(analyzer, origin, destination, age)
-    addRouteStation(analyzer, trip)
+    if origin != destination:
+        duration = int(trip['tripduration'])
+        addCoordenates(analyzer,trip)
+        addStationName(analyzer,trip)
+        addStation(analyzer, origin)
+        addStation(analyzer, destination)
+        addStationNamebyId(analyzer,trip)
+        addTime(analyzer,trip)
+        addConnection(analyzer, origin, destination, duration)
+        addAge(analyzer, trip, origin, destination)
+        addRouteStation(analyzer, trip)
 
 def addCoordenates(analyzer,trip):
     latitude=trip['start station latitude']
@@ -201,13 +198,9 @@ def addConnection(analyzer, origin, destination, duration):
     else:
         gr.addEdge(analyzer['graph'], origin, destination, round((duration / 60),2))
     
-"""def addAge(analyzer, origin, destination, age):
-    entry = m.get(analyzer['Age'],trip['birth year'])
-    estaciones = (origin , destination)
-    if entry is None:
-        m.put(analyzer['Age'],trip['birth year'], estaciones)
-
-    return analyzer"""
+def addAge(analyzer, trip, origin, destination):
+    analyzer['Age'].append({'birth year': trip['birth year'] , 'start station id':trip['start station id'] , 'end station id':trip['end station id']})
+    return analyzer
 
 
 # ==============================
@@ -395,6 +388,7 @@ def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
         current = it.next(iterator)
         if current['weight'] < time:
             vertices[current['vertexB']] = current['weight']
+    print(vertices)
     return vertices
 
 
@@ -407,6 +401,7 @@ def recomendadorRutas(analyzer,edad):   #Req. 5
     estacion_inicio = max_inicio[str(funcion_hash)]
     estacion_final = max_final[str(funcion_hash)]
     recorrido = []
+    print(max_inicio,max_final)
     print(estacion_inicio, estacion_final)
 
 def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
@@ -477,16 +472,14 @@ def hash_function(age):
 
 def estacionesinicio(analyzer):
     data = analyzer['Age']
-    print(analyzer['Age'])
     edades_inicio = {'0': {}, '1': {}, '2': {}, '3': {}, '4': {}, '5': {}, '6': {}}
     for each_person in data:
-        print(each_person)
         age = 2020 - int(each_person['birth year'])
         id_hash = hash_function(age)
         if str(each_person['start station id']) in edades_inicio[str(id_hash)]:
             edades_inicio[str(id_hash)][str(each_person['start station id'])] += 1
         else:
-            edades_inicio[str(id_hash)][str(each_person['start_station'])] = 1
+            edades_inicio[str(id_hash)][str(each_person['start station id'])] = 1
     return edades_inicio
 
 def estacionesfin(analyzer):
@@ -496,9 +489,9 @@ def estacionesfin(analyzer):
         age = 2020 - int(each_person['birth year'])
         id_hash = hash_function(age)
         if str(each_person['end station id']) in edades_fin[str(id_hash)]:
-            edades_fin[str(id_hash)][str(each_person['end_station'])] += 1
+            edades_fin[str(id_hash)][str(each_person['end station id'])] += 1
         else:
-            edades_fin[str(id_hash)][str(each_person['end_station'])] = 1
+            edades_fin[str(id_hash)][str(each_person['end station id'])] = 1
     return edades_fin
 
 def maximoinicio(edades_inicio):

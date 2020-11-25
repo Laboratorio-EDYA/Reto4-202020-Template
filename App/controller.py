@@ -60,10 +60,8 @@ def loadFile(analyzer, tripfile):
     tripfile = cf.data_dir + tripfile
     input_file = csv.DictReader(open(tripfile, encoding="utf-8"),
                                 delimiter=",")
-
     for trip in input_file:
         model.addTrip(analyzer, trip)
-        # model.addAge(analyzer, trip)
 
     lastservice = None
     for service in input_file:
