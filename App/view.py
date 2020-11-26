@@ -48,8 +48,10 @@ operación seleccionada.
 
 
 
-#tripfile = '201801-1-citibike-tripdata.csv'
-tripfile = '201801-1-citibike-tripdata.csv'
+
+tripfile = '201801-4-citibike-tripdata.csv'
+#tripfile = '201801-4-citibike-tripdata.csv'
+
 
 initialStation = None
 recursionLimit = 30000
@@ -127,32 +129,22 @@ def rutaTuristicaCircular(cont): #REQ 2
         elif data == -1:
             print('No existe la estación','-'*75)
         elif data[0] == 0:
-            print('No hay rutas','-'*75)
-
-#def optionFive():
-    
+            print('No hay rutas','-'*75) 
 
 def optionFive(cont): #REQ 3
-    data=controller.estacionesCriticas(cont)
-    print('Las salidas mas usadas son:')
-    cnt1=0
-    cnt2=0
-    cnt3=0
-    for i in data[0]:
-        if cnt1 <3:
-            print('Estación:', i[0])
-        cnt1+=1
-    print('Las entradas más usadas son:')
-    for i in data[1]:
-        if cnt2 <3:
-            print('Estación:', i[0])
-        cnt2+=1
-    print('Las estaciones menos usadas son:')
-    for i in data[2]:
-        if cnt3<3:
-            print('Estación:', i[0])
-        cnt3+=1
-
+    data = controller.estacionesCriticas(cont)
+    print('TOP 1: Los vertices a los que más llegan ciclas: ')
+    print('1. ',data['top1'][0][0],' con ',data['top1'][0][1],' ciclas')
+    print('2. ',data['top1'][1][0],' con ',data['top1'][1][1],' ciclas')
+    print('3. ',data['top1'][2][0],' con ',data['top1'][2][1],' ciclas')
+    print('TOP 1: Los vertices de los que más salen ciclas: ')
+    print('1. ',data['top2'][0][0],' con ',data['top2'][0][1],' ciclas')
+    print('2. ',data['top2'][1][0],' con ',data['top2'][1][1],' ciclas')
+    print('3. ',data['top2'][2][0],' con ',data['top2'][2][1],' ciclas')
+    print('TOP 1: Los vertices menos visitados: ')
+    print('1. ',data['top3'][0][0],' con ',data['top3'][0][1],' ciclas')
+    print('2. ',data['top3'][1][0],' con ',data['top3'][1][1],' ciclas')
+    print('3. ',data['top3'][2][0],' con ',data['top3'][2][1],' ciclas')
         
 def rutaTuristicaResistencia(cont):   #REQ. 4
     time = int(input('Digita el tiempo límite (minutos): '))
@@ -222,7 +214,7 @@ def main():
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
                 t1_start = process_time() #tiempo inicial
-                estacionesCriticas(cont)
+                optionFive(cont)
                 t1_stop = process_time() #tiempo final
             print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
         

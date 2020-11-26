@@ -290,7 +290,7 @@ def compareStations(station, keyvaluestation):
     stationcode = keyvaluestation['key']
     if (station == stationcode):
         return 0
-    elif (station > stationcode):
+    elif (station[0] > stationcode):
         return 1
     else:
         return -1
@@ -366,19 +366,10 @@ def rutaTuristicaCircular(analizador, time, startStation):   #Req. 2
 def estacionesCriticas(analyzer):   #Req. 3
     vertices = gr.vertices(analyzer['graph'])
     values = {}
-    iterator = it.newIterator(vertices)
-    while it.hasNext(iterator):
-        current = it.next(iterator)
-        edges = gr.adjacentEdges(current)
-        iterator2 = it.newIterator(edges)
-        while it.hasNext(iterator2):
-            current2 = it.newIterator(iterator2)
-            if current not in values:
-                values[current] = current2['size']
-            else:
-                values[current] += current2['size']
-    #return hallarTop(values)
-    
+    hallarCiclasPorVertice(analyzer, values, vertices)
+    ranking = clasificarRanking(values)
+    return ranking
+
     
 def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
     vertices = {}
@@ -465,6 +456,120 @@ def distance(lat1, lat2, lon1, lon2):
     # calculate the result 
     return(c * r) 
 
+
+def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
+    vertices = {}
+    res = gr.adjacentEdges(analyzer['graph'], '144') #res = lista
+    iterator = it.newIterator(res)
+    while it.hasNext(iterator):
+        current = it.next(iterator)
+        if current['weight'] < time:
+            vertices[current['vertexB']] = {}
+            vertices[current['vertexB']]['weight'] = current['weight']
+    return vertices
+
+def hallarCiclasPorVertice(analyzer, values, vertices):      
+    iterator = it.newIterator(vertices)
+    while it.hasNext(iterator):
+        current = it.next(iterator)
+        edges = gr.adjacentEdges(analyzer['graph'],current)
+        iterator2 = it.newIterator(edges)
+        while it.hasNext(iterator2):
+            current2 = it.next(iterator2)
+            """[cuantasciclassalen,cuantasciclasleentran]"""
+            #print(current2)
+            if current2['vertexB'] not in values:
+                values[current2['vertexB']] = [0,current2['size']]
+            else:
+                values[current2['vertexB']][1] += current2['size']
+            if current not in values:
+                values[current] = [current2['size'],0]
+            else:
+                values[current][0] += current2['size']
+
+def clasificarRanking(values):
+    ranking = {}
+    ranking['top1'] = [['',0],['',0],['',0]]
+    ranking['top2'] = [['',0],['',0],['',0]]
+    ranking['top3'] = [['',None],['',None],['',None]]
+    for i in values:
+        actual = values[i]
+        if actual[1] > ranking['top1'][0][1]:
+            ranking['top1'][0][1] = actual[1]
+            ranking['top1'][0][0] = i
+        elif actual[1] > ranking['top1'][1][1]:
+            ranking['top1'][1][1] = actual[1]
+            ranking['top1'][1][0] = i
+        elif actual[1] > ranking['top1'][2][1]:
+            ranking['top1'][2][1] = actual[1]
+            ranking['top1'][2][0] = i
+        if actual[0] > ranking['top2'][0][1]:
+            ranking['top2'][0][1] = actual[0]
+            ranking['top2'][0][0] = i
+        elif actual[0] > ranking['top2'][1][1]:
+            ranking['top2'][1][1] = actual[0]
+            ranking['top2'][1][0] = i
+        elif actual[0] > ranking['top2'][2][1]:
+            ranking['top2'][2][1] = actual[0]
+            ranking['top2'][2][0] = i
+        suma = actual[0] + actual[1]
+        if ranking['top3'][0][1] == None:
+            ranking['top3'][0][1] = suma
+            ranking['top3'][0][0] = i
+        elif suma < ranking['top3'][0][1]:
+            ranking['top3'][0][1] = suma
+            ranking['top3'][0][0] = i
+        elif ranking['top3'][1][1] == None:
+            ranking['top3'][1][1] = suma
+            ranking['top3'][1][0] = i
+        elif suma < ranking['top3'][1][1]:
+            ranking['top3'][1][1] = suma
+            ranking['top3'][1][0] = i
+        elif ranking['top3'][2][1] == None:
+            ranking['top3'][2][1] = suma
+            ranking['top3'][2][0] = i
+        elif suma < ranking['top3'][2][1]:
+            ranking['top3'][2][1] = suma
+            ranking['top3'][2][0] = i
+    return ranking
+
+def gradosAkilometros(x):
+    a=x.split('.')
+    try:
+        return str(a[0])+'.'+str(a[1])+str(a[2])
+    except:
+        return str(a[0])+'.'+str(a[1])
+
+def distance(lat1, lat2, lon1, lon2): 
+      
+    # The math module contains a function named 
+    # radians which converts from degrees to radians. 
+    lon1 = radians(float(gradosAkilometros(lon1)))
+    lon2 = radians(float(gradosAkilometros(lon2)))
+    lat1 = radians(float(gradosAkilometros(lat1))) 
+    lat2 = radians(float(gradosAkilometros(lat2)))
+       
+    # Haversine formula  
+    dlon = lon2 - lon1  
+    dlat = lat2 - lat1 
+    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
+  
+    c = 2 * asin(sqrt(a))  
+     
+    # Radius of earth in kilometers. Use 3956 for miles 
+    r = 6371
+       
+    # calculate the result 
+    return(c * r) 
+
+"""    
+#def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
+
+#def recomendadorRutas(analyzer, edades):   #Req. 5
+
+#def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+
+=======
 
 def hash_function(age):
     id_hash = age // 10 - (1 if age % 10 == 0 else 0)
