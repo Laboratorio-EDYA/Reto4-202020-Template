@@ -379,21 +379,23 @@ def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
         current = it.next(iterator)
         if current['weight'] < time:
             vertices[current['vertexB']] = current['weight']
-    print(vertices)
     return vertices
 
 
-def recomendadorRutas(analyzer,edad):   #Req. 5
+def recomendadorRutas(analyzer, edad):   #Req. 5
     funcion_hash = hash_function(edad)
     dic_estaciones_inicio = estacionesinicio(analyzer)
     dic_estaciones_final = estacionesfin(analyzer)
     max_inicio = maximoinicio(dic_estaciones_inicio)
     max_final = maximofinal(dic_estaciones_final)
-    estacion_inicio = max_inicio[str(funcion_hash)]
-    estacion_final = max_final[str(funcion_hash)]
-    recorrido = []
-    print(max_inicio,max_final)
-    print(estacion_inicio, estacion_final)
+    estacion_inicio = str(max_inicio[str(funcion_hash)]) #int: 
+    estacion_final = str(max_final[str(funcion_hash)]) # int:
+    orden = djk.Dijkstra(analyzer['graph'], estacion_inicio)
+    camino = djk.hasPathTo(orden, estacion_final)
+    if camino == True:
+        res = djk.pathTo(orden, estacion_final)
+    print(res)
+    return (estacion_inicio, estacion_final, res)
 
 def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
     StationName=m.valueSet(analyzer['stationsName'])

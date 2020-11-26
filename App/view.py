@@ -155,12 +155,19 @@ def rutaTuristicaResistencia(cont):   #REQ. 4
         fin = each_trip
         peso = data[each_trip]
         print(str(idstation) + ' ---> ' + str(fin) + ' _______ Tiempo: ' , peso , 'minutos')
-"""
-def optionSeven():   #REQ. 5 
-   """ 
+
+def recomendadorRutas(cont):   # REQ. 5
+    edad = int(input('Digita la edad: '))
+    data = controller.recomendadorRutas(cont, edad)
+    if data[0] != '-1':
+        print('La estación en la que más inician viajes las personas del rango de ',edad,' años es la número: ',data[0])
+        print('Desde la estación ',data[0], ', la mayoría de las personas terminan en la estación ',data[1])
+    else: 
+        print('No se encontraron datos en el rango de ' , edad, ' años')
+        
 
 def optionSeven(cont):
-    data=controller.rutaInteresTuristico(cont,"4.076727.216",'-7.198.848.395',"4.076727.216",'-7.198.848.395')        
+    data = controller.rutaInteresTuristico(cont,"4.076727.216",'-7.198.848.395',"4.076727.216",'-7.198.848.395')        
     print(data) 
 """
 
@@ -231,7 +238,10 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                controller.recomendadorRutas(cont, 79)
+                t1_start = process_time() #tiempo inicial
+                recomendadorRutas(cont)
+                t1_stop = process_time() #tiempo final
+            print("Tiempo de ejecución ",t1_stop-t1_start," segundos ")
 
         elif inputs == 7:   #Req. 6
             print("\nRuta de interés turístico")
