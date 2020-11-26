@@ -48,8 +48,10 @@ operación seleccionada.
 
 
 
+
 tripfile = '201801-4-citibike-tripdata.csv'
 #tripfile = '201801-4-citibike-tripdata.csv'
+
 
 initialStation = None
 recursionLimit = 30000
@@ -145,14 +147,14 @@ def optionFive(cont): #REQ 3
     print('3. ',data['top3'][2][0],' con ',data['top3'][2][1],' ciclas')
         
 def rutaTuristicaResistencia(cont):   #REQ. 4
-    time = int(input('Digita el tiempo límite: '))
+    time = int(input('Digita el tiempo límite (minutos): '))
     idstation = int(input('Digita la estación de inicio: '))
     data = controller.rutaTuristicaResistencia(cont, time, idstation)
-    print('En el tiempo limite de ', time, ' se encontraron los siguientes recorridos: ')
-    fin = data.keys()
-    camino = ':'
-    print(str(idstation) + ' --> ' + str(fin) + '   Peso: ' + str(camino))
-
+    print('En el tiempo limite de ', time, ' minutos, se encontraron los siguientes recorridos: ')
+    for each_trip in data:
+        fin = each_trip
+        peso = data[each_trip]
+        print(str(idstation) + ' ---> ' + str(fin) + ' _______ Tiempo: ' , peso , 'minutos')
 """
 def optionSeven():   #REQ. 5 
    """ 
@@ -229,10 +231,7 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                
-                destStation = input("Estación destino (Ej: 15151-10): ")
-            executiontime = timeit.timeit(optionSix, number=1)
-            print("Tiempo de ejecución: " + str(executiontime))
+                controller.recomendadorRutas(cont, 79)
 
         elif inputs == 7:   #Req. 6
             print("\nRuta de interés turístico")

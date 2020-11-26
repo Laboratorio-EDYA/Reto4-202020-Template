@@ -40,7 +40,8 @@ def newEdge(va, vb, weight=0):
             'vertexB': vb,
             'weight': weight,
             'pesos': 0,
-            'size': 0
+            'size': 0,
+            'age' : 0
             }
     return edge
 
