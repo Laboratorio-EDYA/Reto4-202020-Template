@@ -49,7 +49,7 @@ operación seleccionada.
 
 
 
-tripfile = '201801-4-citibike-tripdata.csv'
+tripfile = '201801-1-citibike-tripdata.csv'
 #tripfile = '201801-4-citibike-tripdata.csv'
 
 
@@ -160,8 +160,14 @@ def recomendadorRutas(cont):   # REQ. 5
     edad = int(input('Digita la edad: '))
     data = controller.recomendadorRutas(cont, edad)
     if data[0] != '-1':
-        print('La estación en la que más inician viajes las personas del rango de ',edad,' años es la número: ',data[0])
-        print('Desde la estación ',data[0], ', la mayoría de las personas terminan en la estación ',data[1])
+        print('-> La estación en la que más inician viajes las personas del rango de ',edad,' años es la número: ',data[0])
+        print('-> Desde la estación ',data[0], ', la mayoría de las personas terminan en la estación ',data[1])
+        if len(data[2]) == 1:
+            print('-> Existe una ruta directa entre la estación ',data[0],' y la estación ',data[1],'\n')
+        else:
+            print('-> Iniciando desde la estación ',data[0],' para llegar a la estación',data[1],' se deben pasar por la estaciones: ')
+            for each_vertex in data[2]:
+                print(str(each_vertex))
     else: 
         print('No se encontraron datos en el rango de ' , edad, ' años')
         

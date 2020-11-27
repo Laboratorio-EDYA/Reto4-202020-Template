@@ -391,11 +391,15 @@ def recomendadorRutas(analyzer, edad):   #Req. 5
     estacion_inicio = str(max_inicio[str(funcion_hash)]) #int: 
     estacion_final = str(max_final[str(funcion_hash)]) # int:
     orden = djk.Dijkstra(analyzer['graph'], estacion_inicio)
+    ans= []
     camino = djk.hasPathTo(orden, estacion_final)
     if camino == True:
         res = djk.pathTo(orden, estacion_final)
-    print(res)
-    return (estacion_inicio, estacion_final, res)
+        iterator = it.newIterator(res)
+        while it.hasNext(iterator):
+            vertice = it.next(iterator)['vertexB']
+            ans.append(vertice)
+    return (estacion_inicio, estacion_final, ans)
 
 def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
     StationName=m.valueSet(analyzer['stationsName'])
@@ -458,17 +462,6 @@ def distance(lat1, lat2, lon1, lon2):
     # calculate the result 
     return(c * r) 
 
-
-def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
-    vertices = {}
-    res = gr.adjacentEdges(analyzer['graph'], '144') #res = lista
-    iterator = it.newIterator(res)
-    while it.hasNext(iterator):
-        current = it.next(iterator)
-        if current['weight'] < time:
-            vertices[current['vertexB']] = {}
-            vertices[current['vertexB']]['weight'] = current['weight']
-    return vertices
 
 def hallarCiclasPorVertice(analyzer, values, vertices):      
     iterator = it.newIterator(vertices)
@@ -535,44 +528,6 @@ def clasificarRanking(values):
             ranking['top3'][2][0] = i
     return ranking
 
-def gradosAkilometros(x):
-    a=x.split('.')
-    try:
-        return str(a[0])+'.'+str(a[1])+str(a[2])
-    except:
-        return str(a[0])+'.'+str(a[1])
-
-def distance(lat1, lat2, lon1, lon2): 
-      
-    # The math module contains a function named 
-    # radians which converts from degrees to radians. 
-    lon1 = radians(float(gradosAkilometros(lon1)))
-    lon2 = radians(float(gradosAkilometros(lon2)))
-    lat1 = radians(float(gradosAkilometros(lat1))) 
-    lat2 = radians(float(gradosAkilometros(lat2)))
-       
-    # Haversine formula  
-    dlon = lon2 - lon1  
-    dlat = lat2 - lat1 
-    a = sin(dlat / 2)**2 + cos(lat1) * cos(lat2) * sin(dlon / 2)**2
-  
-    c = 2 * asin(sqrt(a))  
-     
-    # Radius of earth in kilometers. Use 3956 for miles 
-    r = 6371
-       
-    # calculate the result 
-    return(c * r) 
-
-"""    
-#def rutaTuristicaResistencia(analyzer, time, idstation):   #Req. 4
-
-#def recomendadorRutas(analyzer, edades):   #Req. 5
-
-#def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
-
-=======
-
 def hash_function(age):
     id_hash = age // 10 - (1 if age % 10 == 0 else 0)
     return id_hash if id_hash < 6 else 6
@@ -626,6 +581,6 @@ def maximofinal(edades_fin):
     return ganador_final
 
 
-"""#def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
+#def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
 #def estacionesPublicidad(analyzer, rango):   #Req. 7*
 #def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
