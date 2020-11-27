@@ -424,10 +424,26 @@ def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   
             if STP < minimal1:
                 nameminimal1=coordenate['key']
                 minimal1=STP
-    duration = float(m.get(analyzer['StationTripTime'],nameminimal)['value']) + float(m.get(analyzer['StationTripTime'],nameminimal1)['value'])
     
+    duration = float(m.get(analyzer['StationTripTime'],nameminimal)['value']) + float(m.get(analyzer['StationTripTime'],nameminimal1)['value'])
+    nameminimalid=m.get(analyzer['StationsById'],nameminimal)
+    lst=gr.adjacents(analyzer['graph'],nameminimalid['value'])
+    Keys=m.keySet(analyzer['StationsById'])
+    iterator3=it.newIterator(Keys)
+    lstres=lt.newList()
+    while it.hasNext(iterator3):
+        actual9=it.next(iterator3)
+        Value=m.get(analyzer['StationsById'],actual9)
+        
+        iterator4=it.newIterator(lst)
+        while it.hasNext(iterator4):
+            actual8=it.next(iterator4)
+            
+            if actual8 == Value['value']:
+                lt.addLast(lstres,actual9)
+
     #####
-    return (nameminimal, nameminimal1, duration)
+    return (nameminimal, nameminimal1, duration,lstres)
 
 # ==============================
 # Funciones Auxiliares
