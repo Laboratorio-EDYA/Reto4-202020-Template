@@ -208,6 +208,11 @@ def addConnection(analyzer, origin, destination, duration):
         edge['weight'] = round((edge['pesos']/edge['size']),2)
     else:
         gr.addEdge(analyzer['graph'], origin, destination, round((duration / 60),2))
+        edge = gr.getEdge(analyzer['graph'], origin, destination)
+        edge['pesos'] += round((duration / 60),2)
+        edge['size'] += 1
+        edge['weight'] = round((edge['pesos']/edge['size']),2)
+        
     
 def addAge(analyzer, trip, origin, destination):
     analyzer['Age'].append({'birth year': trip['birth year'] , 'start station id':trip['start station id'] , 'end station id':trip['end station id']})
