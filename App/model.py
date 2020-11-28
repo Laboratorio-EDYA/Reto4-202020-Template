@@ -100,6 +100,10 @@ def newAnalyzer(tamaño, carga):
                                     maptype='CHAINING',
                                     loadfactor=carga,
                                     comparefunction=compareStations)
+        analyzer['UserTypeByBirthDate'] = m.newMap(numelements=tamaño,
+                                    maptype='CHAINING',
+                                    loadfactor=carga,
+                                    comparefunction=compareStations)
         analyzer['Age'] = []
         return analyzer
     except Exception as exp:
@@ -124,6 +128,13 @@ def addTrip(analyzer, trip):
         addConnection(analyzer, origin, destination, duration)
         addAge(analyzer, trip, origin, destination)
         addRouteStation(analyzer, trip)
+        addTypeOfUserbyDate(analyzer,trip)
+
+def addTypeOfUserbyDate(analyzer,trip):
+    entry=m.get(analyzer['UserTypeByBirthDate'],trip['usertype'])
+    if entry is None:
+        m.put(analyzer['UserTypeByBirthDate'],trip['start station name'], (trip['birth year'],trip['start station name'],trip['end station name'],trip['usertype']))
+    return analyzer
 
 def addCoordenates(analyzer,trip):
     latitude=trip['start station latitude']
@@ -441,9 +452,36 @@ def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   
             
             if actual8 == Value['value']:
                 lt.addLast(lstres,actual9)
-
     #####
     return (nameminimal, nameminimal1, duration,lstres)
+
+def estacionesPublicidad(analyzer, rango):
+    users=m.keySet(analyzer['UserTypeByBirthDate'])
+    iterator= it.newIterator(users)
+    print(users)
+    resdict={}
+    while it.hasNext(iterator):
+        actual=it.next(iterator)
+        key_value=m.get(analyzer['UserTypeByBirthDate'],actual)
+        key=key_value['key']
+        value=key_value['value']
+        birth=int(value[0])
+        customertype=value[3]
+        startstation=value[1]
+        endstation=value[2]
+        cadena=startstation + 'and' + endstation
+        if (2020-birth) <=rango and cadena in resdict and customertype =='Subscriber': 
+            resdict[cadena]+=1
+        elif (2020-birth) <=rango and cadena not in resdict and customertype =='Subscriber': 
+            resdict[cadena]=1
+    res=sorted(resdict.items(), key=operator.itemgetter(1), reverse=True)
+
+    return res
+    
+
+
+
+
 
 # ==============================
 # Funciones Auxiliares
@@ -598,5 +636,5 @@ def maximofinal(edades_fin):
 
 
 #def rutaInteresTuristico(analyzer, latlocal, longlocal, latfinal, longfinal):   #Req. 6
-#def estacionesPublicidad(analyzer, rango):   #Req. 7*
+   #Req. 7*
 #def bicicletasMantenimmiento(analyzer, idbike, fecha):   #Req. 8*"""
