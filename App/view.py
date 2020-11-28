@@ -205,39 +205,45 @@ def optionEight(cont):
         if rango=='1':
             res=controller.estacionesPublicidad(cont,10)
             print('Las estaciones más usadas por este rango de edad es:')
-            for i in res:
-                print(i)
+            iterator=it.newIterator(res)
+            while it.hasNext(iterator):
+                print(it.hasNext(iterator))
         elif rango=='2':
             res=controller.estacionesPublicidad(cont,20)
             print('Las estaciones más usadas por este rango de edad es:')
-            for i in res:
-                print(i)
+            iterator=it.newIterator(res)
+            while it.hasNext(iterator):
+                print(it.hasNext(iterator))
         elif rango=='3':
             res=controller.estacionesPublicidad(cont,30)
             print('Las estaciones más usadas por este rango de edad es:')
-            for i in res:
-                print(i)
+            iterator=it.newIterator(res)
+            while it.hasNext(iterator):
+                print(it.hasNext(iterator))
         elif rango=='4':
             res=controller.estacionesPublicidad(cont,40)
             print('Las estaciones más usadas por este rango de edad es:')
-            for i in res:
-                print(i)
+            iterator=it.newIterator(res)
+            while it.hasNext(iterator):
+                print(it.hasNext(iterator))
         elif rango=='5':
             res=controller.estacionesPublicidad(cont,50)
-            """Las estaciones más usadas por este rango de edad es:"""
-            for i in res:
-                print(i)
+            print('Las estaciones más usadas por este rango de edad es:')
+            iterator=it.newIterator(res)
+            while it.hasNext(iterator):
+                print(it.hasNext(iterator))
         elif rango=='6':
             res=controller.estacionesPublicidad(cont,60)
             print('Las estaciones más usadas por este rango de edad es:')
-            for i in res:
-                print(i)
+            iterator=it.newIterator(res)
+            while it.hasNext(iterator):
+                print(it.hasNext(iterator))
         elif rango=='7':
             res=controller.estacionesPublicidad(cont,100)
             print('Las estaciones más usadas por este rango de edad es:')
-            for i in res:
-                print(i)
-            
+            iterator=it.newIterator(res)
+            while it.hasNext(iterator):
+                print(it.hasNext(iterator))    
         else:
             print('Digitó mal')
 """
