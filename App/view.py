@@ -137,11 +137,11 @@ def optionFive(cont): #REQ 3
     print('1. ',data['top1'][0][0],' con ',data['top1'][0][1],' ciclas')
     print('2. ',data['top1'][1][0],' con ',data['top1'][1][1],' ciclas')
     print('3. ',data['top1'][2][0],' con ',data['top1'][2][1],' ciclas')
-    print('TOP 1: Los vertices de los que más salen ciclas: ')
+    print('TOP 2: Los vertices de los que más salen ciclas: ')
     print('1. ',data['top2'][0][0],' con ',data['top2'][0][1],' ciclas')
     print('2. ',data['top2'][1][0],' con ',data['top2'][1][1],' ciclas')
     print('3. ',data['top2'][2][0],' con ',data['top2'][2][1],' ciclas')
-    print('TOP 1: Los vertices menos visitados: ')
+    print('TOP 3: Los vertices menos visitados: ')
     print('1. ',data['top3'][0][0],' con ',data['top3'][0][1],' ciclas')
     print('2. ',data['top3'][1][0],' con ',data['top3'][1][1],' ciclas')
     print('3. ',data['top3'][2][0],' con ',data['top3'][2][1],' ciclas')
@@ -224,7 +224,7 @@ def optionEight(cont):
                 print(i)
         elif rango=='5':
             res=controller.estacionesPublicidad(cont,50)
-            Las estaciones más usadas por este rango de edad es:'
+            """Las estaciones más usadas por este rango de edad es:"""
             for i in res:
                 print(i)
         elif rango=='6':
