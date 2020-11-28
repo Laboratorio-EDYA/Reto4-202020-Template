@@ -145,10 +145,10 @@ def recomendadorRutas(cont, edades):   #Req. 5
 
 def rutaInteresTuristico(cont, latlocal, longlocal, latfinal, longfinal):   #Req. 6
     return model.rutaInteresTuristico(cont, latlocal, longlocal, latfinal, longfinal)
-"""
+
 def estacionesPublicidad(cont, rango):   #Req. 7*
     return model.estacionesPublicidad(cont, rango)
-
+"""
 def bicicletasMantenimmiento(cont, idbike, fecha):   #Req. 8*
     return model.bicicletasMantenimmiento(cont, idbike, fecha)
 """

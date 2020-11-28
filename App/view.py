@@ -173,8 +173,73 @@ def recomendadorRutas(cont):   # REQ. 5
         
 
 def optionSeven(cont):
-    data = controller.rutaInteresTuristico(cont,"4.076727.216",'-7.198.848.395',"4.076727.216",'-7.198.848.395')        
-    print(data) 
+    if cont ==None:
+        print('Digite bien el archivo')
+    else:
+        latlocal=input('Digite la latitud actual')
+        longlocal=input('Digite la longotud local')
+        latfinal=input('digite la latitud del sitio turístico')
+        longfinal=input('Digite la longitud del sitio turístico')
+        data=controller.rutaInteresTuristico(cont,latlocal,longlocal,latfinal,longfinal)
+        print('La estación más cercana a usted es: ', data[0])
+        print('La estación más cercana a su sitio de interés es: ', data[1])
+        print('La duración de su viaje es de: ', data[2])
+        lista=data[3]
+        iterator=it.newIterator(lista)
+        print('Las estaciones que encontrará en su viaje son:')
+        while it.hasNext(iterator):
+            print(it.next(iterator))
+def optionEight(cont):
+    if cont == None:
+        print('Digite bien el archivo')
+    else:
+ 
+        print('1: 0-10')
+        print('2: 11-20')
+        print('3: 21-30')
+        print('4: 31-40')
+        print('5: 41-50')
+        print('6: 51-60')
+        print('7: 60+')
+        rango=input('Digite el rango:')
+        if rango=='1':
+            res=controller.estacionesPublicidad(cont,10)
+            print('Las estaciones más usadas por este rango de edad es:')
+            for i in res:
+                print(i)
+        elif rango=='2':
+            res=controller.estacionesPublicidad(cont,20)
+            print('Las estaciones más usadas por este rango de edad es:')
+            for i in res:
+                print(i)
+        elif rango=='3':
+            res=controller.estacionesPublicidad(cont,30)
+            print('Las estaciones más usadas por este rango de edad es:')
+            for i in res:
+                print(i)
+        elif rango=='4':
+            res=controller.estacionesPublicidad(cont,40)
+            print('Las estaciones más usadas por este rango de edad es:')
+            for i in res:
+                print(i)
+        elif rango=='5':
+            res=controller.estacionesPublicidad(cont,50)
+            Las estaciones más usadas por este rango de edad es:'
+            for i in res:
+                print(i)
+        elif rango=='6':
+            res=controller.estacionesPublicidad(cont,60)
+            print('Las estaciones más usadas por este rango de edad es:')
+            for i in res:
+                print(i)
+        elif rango=='7':
+            res=controller.estacionesPublicidad(cont,100)
+            print('Las estaciones más usadas por este rango de edad es:')
+            for i in res:
+                print(i)
+            
+        else:
+            print('Digitó mal')
 """
 
 #def optionSix():
@@ -263,7 +328,7 @@ def main():
             if cont == None:
                 print('¡KELLY CARGUE EL ARCHIVO PRIMERO!')
             else:
-                print('lolazo xd')
+                optionEight(cont)
         
         elif inputs == 9:   #Req. 8*
             print('\nIdentificacion de bicicletas para mantenimiento')
@@ -275,7 +340,6 @@ def main():
         elif inputs == 0:   #Salir
             print('Cerrando el programa ...')
             sys.exit(0)
-        
         else:
             print('Opción incorrecta .....')
 main()
